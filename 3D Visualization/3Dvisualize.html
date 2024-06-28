@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stereo 3D-Model Test</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      .container {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+      }
+      .big-box {
+        width: 50%;
+        height: 100%;
+        background-color: lightblue;
+        border: 2px solid black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .button-container {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        transition: opacity 0.3s;
+      }
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+      .active-button {
+        font-weight: bold;
+        background-color: #4caf50;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="big-box" id="container1">
+        <canvas id="canvas1"></canvas>
+      </div>
+      <div class="big-box" id="container2">
+        <canvas id="canvas2"></canvas>
+      </div>
+    </div>
+
+    <div class="button-container" id="buttonContainer">
+      <button id="solidButton" class="active-button">Solid</button>
+      <button id="pointCloudButton">Point Cloud</button>
+      <button id="wireframeButton">Wireframe</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
