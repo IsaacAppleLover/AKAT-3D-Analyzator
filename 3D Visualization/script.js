@@ -29,12 +29,12 @@ const textureLoader = new THREE.TextureLoader();
 let originalImage, depthMap;
 let isInitialized = false;
 
-textureLoader.load("Azrael2.jpg", function (texture) {
+textureLoader.load("Chameleon.jpg", function (texture) {
   originalImage = texture;
   init();
 });
 
-textureLoader.load("Azrael2DepthMap.jpg", function (texture) {
+textureLoader.load("ChameleonDepthMap.jpg", function (texture) {
   depthMap = texture;
   init();
 });
