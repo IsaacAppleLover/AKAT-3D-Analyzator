@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from numpy import load
 import glob
 
 # Set the chessboard size and the size of the squares
@@ -16,7 +17,7 @@ objpoints = []
 imgpoints = []
 
 # Load all images using glob
-images = glob.glob('Utils/Images/test/Chessboard/*.png')
+images = glob.glob('Utils/Images/test/Chessboard/links/*.png')
 
 for fname in images:
     img = cv2.imread(fname)
@@ -42,6 +43,15 @@ cv2.destroyAllWindows()
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 # Save the calibration result for later use
-np.savez('camera_calibration.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
+np.savez('camera_calibration_links.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
+
+data = load('camera_calibration_links.npz')
+lst = data.files
+for item in lst:
+    print(item)
+    print(data[item])
+
 
 print("Calibration completed and parameters saved.")
+
+
