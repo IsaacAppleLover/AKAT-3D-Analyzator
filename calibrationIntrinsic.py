@@ -16,7 +16,7 @@ objpoints = []
 imgpoints = []
 
 # Load all images using glob
-images = glob.glob('path_to_calibration_images/*.jpg')
+images = glob.glob('Utils/Images/Schachbrett/*.jpg')
 
 for fname in images:
     img = cv2.imread(fname)
