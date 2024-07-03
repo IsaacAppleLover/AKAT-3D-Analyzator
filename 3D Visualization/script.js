@@ -1,6 +1,5 @@
 const resolution = 720;
 
-// Set up the scenes, cameras, and renderers
 const scene1 = new THREE.Scene();
 const scene2 = new THREE.Scene();
 const aspect = window.innerWidth / 2 / window.innerHeight;
@@ -15,26 +14,21 @@ const renderer2 = new THREE.WebGLRenderer({
 renderer1.setSize(window.innerWidth / 2, window.innerHeight);
 renderer2.setSize(window.innerWidth / 2, window.innerHeight);
 
-// Set initial zoom level
 camera1.position.z = 8;
 camera2.position.z = 8;
-
-// Set camera offset for stereo effect
 const interocularDistance = 0.1;
 camera1.position.x -= interocularDistance / 2;
 camera2.position.x += interocularDistance / 2;
 
-// Load the images once
 const textureLoader = new THREE.TextureLoader();
 let originalImage, depthMap;
 let isInitialized = false;
 
-textureLoader.load("Chameleon.jpg", function (texture) {
+textureLoader.load("Azrael2.jpg", function (texture) {
   originalImage = texture;
   init();
 });
-
-textureLoader.load("ChameleonDepthMap.jpg", function (texture) {
+textureLoader.load("Azrael2DepthMap.jpg", function (texture) {
   depthMap = texture;
   init();
 });
@@ -47,21 +41,24 @@ function init() {
 }
 
 const geometry = new THREE.PlaneGeometry(5, 5, resolution, resolution);
-
 let plane1, plane2;
+let displacementScale = 1;
 
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
 
-const buttonContainer = document.getElementById("buttonContainer");
+const controlsContainer1 = document.getElementById("controlsContainer1");
+const controlsContainer2 = document.getElementById("controlsContainer2");
 
 const onMouseDown = (event) => {
   isDragging = true;
-  buttonContainer.classList.add("hidden");
+  controlsContainer1.classList.add("hidden");
+  controlsContainer2.classList.add("hidden");
 };
 const onMouseUp = (event) => {
   isDragging = false;
-  buttonContainer.classList.remove("hidden");
+  controlsContainer1.classList.remove("hidden");
+  controlsContainer2.classList.remove("hidden");
 };
 const onMouseMove = (event) => {
   if (isDragging) {
@@ -116,24 +113,26 @@ function setSolidMode() {
     uniforms: {
       texture1: { type: "t", value: originalImage },
       displacementMap: { type: "t", value: depthMap },
+      displacementScale: { value: displacementScale },
     },
     vertexShader: `
-          uniform sampler2D displacementMap;
-          varying vec2 vUv;
-          void main() {
-            vUv = uv;
-            vec3 newPosition = position + normal * texture2D(displacementMap, uv).r * 5.0;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-          }
+            uniform sampler2D displacementMap;
+            uniform float displacementScale;
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                vec3 newPosition = position + normal * texture2D(displacementMap, uv).r * displacementScale;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+            }
         `,
     fragmentShader: `
-          uniform sampler2D texture1;
-          varying vec2 vUv;
-          void main() {
-            gl_FragColor = texture2D(texture1, vUv);
-          }
+            uniform sampler2D texture1;
+            varying vec2 vUv;
+            void main() {
+                gl_FragColor = texture2D(texture1, vUv);
+            }
         `,
-    side: THREE.DoubleSide, // Add this line to render both sides
+    side: THREE.DoubleSide,
   });
 
   scene1.remove(plane1);
@@ -142,7 +141,7 @@ function setSolidMode() {
   plane2 = new THREE.Mesh(geometry, solidMaterial);
   scene1.add(plane1);
   scene2.add(plane2);
-  setActiveButton("solidButton");
+  setActiveButton("solidButton1", "solidButton2");
   renderer1.render(scene1, camera1);
   renderer2.render(scene2, camera2);
 }
@@ -167,8 +166,7 @@ function setPointCloudMode() {
       const r = imageData[i] / 255;
       const g = imageData[i + 1] / 255;
       const b = imageData[i + 2] / 255;
-
-      const z = (depthData[i] / 255) * 5.0;
+      const z = (depthData[i] / 255) * displacementScale;
 
       vertices.push(
         (x / resolution) * 5 - 2.5,
@@ -202,7 +200,7 @@ function setPointCloudMode() {
   plane2 = points2;
   scene1.add(plane1);
   scene2.add(plane2);
-  setActiveButton("pointCloudButton");
+  setActiveButton("pointCloudButton1", "pointCloudButton2");
   renderer1.render(scene1, camera1);
   renderer2.render(scene2, camera2);
 }
@@ -228,8 +226,7 @@ function setWireframeMode() {
       const r = imageData[i] / 255;
       const g = imageData[i + 1] / 255;
       const b = imageData[i + 2] / 255;
-
-      const z = (depthData[i] / 255) * 5.0;
+      const z = (depthData[i] / 255) * displacementScale;
 
       const vx = (x / resolution) * 5 - 2.5;
       const vy = (1 - y / resolution) * 5 - 2.5;
@@ -280,15 +277,24 @@ function setWireframeMode() {
   plane2 = wireframe2;
   scene1.add(plane1);
   scene2.add(plane2);
-  setActiveButton("wireframeButton");
+  setActiveButton("wireframeButton1", "wireframeButton2");
   renderer1.render(scene1, camera1);
   renderer2.render(scene2, camera2);
 }
 
-function setActiveButton(activeButtonId) {
-  const buttons = document.querySelectorAll(".button-container button");
-  buttons.forEach((button) => {
-    if (button.id === activeButtonId) {
+function setActiveButton(activeButtonId1, activeButtonId2) {
+  const buttons1 = document.querySelectorAll(`#controlsContainer1 button`);
+  buttons1.forEach((button) => {
+    if (button.id === activeButtonId1) {
+      button.classList.add("active-button");
+    } else {
+      button.classList.remove("active-button");
+    }
+  });
+
+  const buttons2 = document.querySelectorAll(`#controlsContainer2 button`);
+  buttons2.forEach((button) => {
+    if (button.id === activeButtonId2) {
       button.classList.add("active-button");
     } else {
       button.classList.remove("active-button");
@@ -296,13 +302,50 @@ function setActiveButton(activeButtonId) {
   });
 }
 
-document.getElementById("solidButton").addEventListener("click", setSolidMode);
+document.getElementById("solidButton1").addEventListener("click", setSolidMode);
+document.getElementById("solidButton2").addEventListener("click", setSolidMode);
+
 document
-  .getElementById("pointCloudButton")
+  .getElementById("pointCloudButton1")
   .addEventListener("click", setPointCloudMode);
 document
-  .getElementById("wireframeButton")
+  .getElementById("pointCloudButton2")
+  .addEventListener("click", setPointCloudMode);
+
+document
+  .getElementById("wireframeButton1")
   .addEventListener("click", setWireframeMode);
+document
+  .getElementById("wireframeButton2")
+  .addEventListener("click", setWireframeMode);
+
+document.getElementById("depthSlider1").addEventListener("input", (event) => {
+  displacementScale = event.target.value;
+  document.getElementById("depthSlider2").value = displacementScale;
+  updateDepth();
+});
+document.getElementById("depthSlider2").addEventListener("input", (event) => {
+  displacementScale = event.target.value;
+  document.getElementById("depthSlider1").value = displacementScale;
+  updateDepth();
+});
+
+function updateDepth() {
+  switch (document.querySelector(".active-button").id) {
+    case "solidButton1":
+    case "solidButton2":
+      setSolidMode();
+      break;
+    case "pointCloudButton1":
+    case "pointCloudButton2":
+      setPointCloudMode();
+      break;
+    case "wireframeButton1":
+    case "wireframeButton2":
+      setWireframeMode();
+      break;
+  }
+}
 
 window.addEventListener("resize", () => {
   const aspect = window.innerWidth / 2 / window.innerHeight;
