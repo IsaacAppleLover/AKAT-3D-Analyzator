@@ -13,6 +13,7 @@
         display: flex;
         width: 100vw;
         height: 100vh;
+        position: relative;
       }
       .big-box {
         width: 50%;
@@ -22,12 +23,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
       }
-      .button-container {
+      .controls-container {
         position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
+        bottom: 20px;
         text-align: center;
         transition: opacity 0.3s;
       }
@@ -45,22 +45,56 @@
         background-color: #4caf50;
         color: white;
       }
+      .slider-container {
+        margin-top: 10px;
+      }
+      input[type="range"] {
+        width: 80%;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="big-box" id="container1">
         <canvas id="canvas1"></canvas>
+        <div class="controls-container" id="controlsContainer1">
+          <div class="button-container">
+            <button id="solidButton1" class="active-button">Solid</button>
+            <button id="pointCloudButton1">Point Cloud</button>
+            <button id="wireframeButton1">Wireframe</button>
+          </div>
+          <div class="slider-container">
+            <input
+              type="range"
+              id="depthSlider1"
+              min="0"
+              max="5"
+              step="0.1"
+              value="1"
+            />
+          </div>
+        </div>
       </div>
       <div class="big-box" id="container2">
         <canvas id="canvas2"></canvas>
+        <div class="controls-container" id="controlsContainer2">
+          <div class="button-container">
+            <button id="solidButton2" class="active-button">Solid</button>
+            <button id="pointCloudButton2">Point Cloud</button>
+            <button id="wireframeButton2">Wireframe</button>
+          </div>
+          <div class="slider-container">
+            <input
+              type="range"
+              id="depthSlider2"
+              min="0"
+              max="5"
+              step="0.1"
+              value="1"
+            />
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="button-container" id="buttonContainer">
-      <button id="solidButton" class="active-button">Solid</button>
-      <button id="pointCloudButton">Point Cloud</button>
-      <button id="wireframeButton">Wireframe</button>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="script.js"></script>
