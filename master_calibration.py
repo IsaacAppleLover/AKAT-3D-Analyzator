@@ -34,4 +34,19 @@ def intrinsicCalibration(images_path, chessboard_size, square_size):
             cv2.drawChessboardCorners(img, chessboard_size, corners2, ret)
             cv2.imshow('Chessboard Corners', img)
             cv2.waitKey()  # Show each image for 500 ms
-#cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
+
+    # Calibrate the camera
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+
+    # Save the calibration result for later use
+    np.savez('camera_calibration_links.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
+
+    return mtx, dist, rvecs, tvecs
+
+def extrinsicCalibration(images_path_left, images_path_right, chessboard_size, square_size, intrinsic_cal_links, intrinsic_cal_rechts):
+
+    # Prepare object points
+    objp = np.zeros((np.prod(chessboard_size), 3), dtype=np.float32)
+    objp[:, :2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1, 2)
+    objp *= square_size
