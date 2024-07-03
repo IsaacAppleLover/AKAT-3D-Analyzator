@@ -16,7 +16,7 @@ objpoints = []
 imgpoints = []
 
 # Load all images using glob
-images = glob.glob('Utils/Images/Schachbrett/*.jpg')
+images = glob.glob('Utils/Images/test/Chessboard/*.png')
 
 for fname in images:
     img = cv2.imread(fname)
