@@ -110,8 +110,8 @@ def main():
                     buffer.Width(),
                     buffer.Height()
                 )
-                rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_RGB8, ids_peak_ipl.ConversionMode_Classic)
-                image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\tim3.png"
+                rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_RGB12, ids_peak_ipl.ConversionMode_HighQuality)
+                image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\not_black.png"
                 ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
                 
                 # Open image with PIL
