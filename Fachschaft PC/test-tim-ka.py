@@ -110,8 +110,9 @@ def main():
                     buffer.Width(),
                     buffer.Height()
                 )
+            
                 rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_RGB12, ids_peak_ipl.ConversionMode_HighQuality)
-                rgb_img = ids_peak_ipl.GammaCorrector.SetGammaCorrectionValue(rgb_img, 0.45)
+                rgb_img = ids_peak_ipl.GammaCorrector.SetGammaCorrectionValue(0.45)
                 image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\not_black.png"
                 ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
                 
