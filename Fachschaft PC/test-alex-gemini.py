@@ -149,6 +149,7 @@ def main():
 			min_exposure_time = remote_nodemap.FindNode("ExposureTime").Minimum()
 			max_exposure_time = remote_nodemap.FindNode("ExposureTime").Maximum()
 			desired_exposure_time = 600  # Example: 1 millisecond
+			remote_nodemap.FindNode("ExposureTime").SetValue(desired_exposure_time)
 			#exposure_node.SetValue(max_exposure_time)
 
 			# Load default camera settings
