@@ -48,6 +48,7 @@ def increase_brightness(image, factor=2.0):
 
 def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 	try:
+		barrier.wait()
 		print("Starting acquisition...")
 		m_data_stream.StartAcquisition()
 		remote_nodemap.FindNode("AcquisitionStart").Execute()
@@ -132,15 +133,15 @@ def main():
 			# Get frame rate range. All values in fps.
 			min_frame_rate = remote_nodemap.FindNode("AcquisitionFrameRate").Minimum()
 			max_frame_rate = remote_nodemap.FindNode("AcquisitionFrameRate").Maximum()
-			remote_nodemap.FindNode("AcquisitionFrameRate").SetValue(min_frame_rate)
+			#remote_nodemap.FindNode("AcquisitionFrameRate").SetValue(min_frame_rate)
 
 			remote_nodemap.FindNode("GainSelector").SetCurrentEntry("AnalogAll")
 
-				# Get gain range.
+			# Get gain range.
 			min_gain = remote_nodemap.FindNode("Gain").Minimum()
 			max_gain = remote_nodemap.FindNode("Gain").Maximum()
 
-			remote_nodemap.FindNode("Gain").SetValue(max_gain)
+			#remote_nodemap.FindNode("Gain").SetValue(max_gain)
 
 			# Manually set exposure time
 			exposure_node = remote_nodemap.FindNode("ExposureTime")
@@ -148,7 +149,7 @@ def main():
 			min_exposure_time = remote_nodemap.FindNode("ExposureTime").Minimum()
 			max_exposure_time = remote_nodemap.FindNode("ExposureTime").Maximum()
 			desired_exposure_time = 600  # Example: 1 millisecond
-			exposure_node.SetValue(max_exposure_time)
+			#exposure_node.SetValue(max_exposure_time)
 
 			# Load default camera settings
 			remote_nodemap.FindNode("UserSetSelector").SetCurrentEntry("Default")
