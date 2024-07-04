@@ -3,7 +3,10 @@ from ids_peak_ipl import ids_peak_ipl
 from ids_peak_afl import ids_peak_afl
 from PIL import Image, ImageEnhance
 import numpy as np
-import sys
+
+m_device = None
+m_data_stream = None
+m_node_map_remote_device = None
 
 class FinishedCallback(ids_peak_afl.FinishedCallback):
     def callback(self) -> None:
@@ -18,85 +21,88 @@ class ComponentGainFinishedCallback(ids_peak_afl.ComponentGainFinishedCallback):
         print("GainFinishedCallback!")
 
 def apply_gamma_correction(image, gamma=0.45):
-    # Gamma-Korrektur anwenden
     inv_gamma = 1.0 / gamma
     table = [((i / 255.0) ** inv_gamma) * 255 for i in range(256)]
     table = np.array(table).astype("uint8")
-    return image.point(table)
+    return Image.fromarray(np.asarray(image.point(table)))
 
 def increase_brightness(image, factor=2.0):
-    # Helligkeit erhöhen
     enhancer = ImageEnhance.Brightness(image)
     return enhancer.enhance(factor)
 
 def main():
+    # Initialize library calls should be matched by a corresponding Exit or close call
+    ids_peak.Library.Initialize()
+    ids_peak_afl.Library.Init()
+
+    # Create a DeviceManager object
+    device_manager = ids_peak.DeviceManager.Instance()
+
     try:
-        # Initialisierung der Bibliotheken
-        ids_peak.Library.Initialize()
-        ids_peak_afl.Library.Init()
-
-        # Geräteverwaltung
-        device_manager = ids_peak.DeviceManager.Instance()
-
-        # Geräte aktualisieren
+        # Update the DeviceManager
         device_manager.Update()
 
-        # Kein Gerät gefunden
+        # Exit program if no device was found
         if device_manager.Devices().empty():
-            print("Kein Gerät gefunden. Beende das Programm.")
+            print("No device found. Exiting Program.")
             return -1
 
-        # Erstes Gerät öffnen
+        # Open the first device
         device = device_manager.Devices()[0].OpenDevice(ids_peak.DeviceAccessType_Control)
-        print(f"Gerät geöffnet: {device.SerialNumber()} -> {device.DisplayName()}")
 
-        # Nodemap für GenICam-Zugriff
+        print(f"Device: {device.SerialNumber()} -> {device.DisplayName()}")
+
+        # Nodemap for accessing GenICam nodes
         remote_nodemap = device.RemoteDevice().NodeMaps()[0]
 
-        # Autofeature-Manager und Controller erstellen
+        # Autofeature manager, which can have multiple controllers
         manager = ids_peak_afl.Manager(remote_nodemap)
+        # Create autofocus controller
         controller = manager.CreateController(ids_peak_afl.PEAK_AFL_CONTROLLER_TYPE_BRIGHTNESS)
 
         print(f"Controller Status: {controller.Status()}")
-        print(f"Controller Typ: {controller.Type()}")
+        print(f"Controller Type: {controller.Type()}")
 
-        # Automatische Belichtung und Gain einstellen
+        # Enable auto exposure and auto gain
         remote_nodemap.FindNode("ExposureAuto").SetCurrentEntry("Continuous")
         remote_nodemap.FindNode("GainAuto").SetCurrentEntry("Continuous")
 
-        # Standardkameraeinstellungen laden
+        # Load default camera settings
         remote_nodemap.FindNode("UserSetSelector").SetCurrentEntry("Default")
         remote_nodemap.FindNode("UserSetLoad").Execute()
         remote_nodemap.FindNode("UserSetLoad").WaitUntilDone()
 
-        # Callbacks registrieren
+        # Register callbacks
         finished = FinishedCallback(controller)
         exposureFinished = ComponentExposureFinishedCallback(controller)
         gainFinished = ComponentGainFinishedCallback(controller)
 
-        # Datenstrom öffnen und Buffer zuweisen
-        data_stream = device.DataStreams()[0].OpenDataStream()
+        # Open first data stream
+        m_data_stream = device.DataStreams()[0].OpenDataStream()
+        # Buffer size
         payload_size = remote_nodemap.FindNode("PayloadSize").Value()
-        buffer_count_max = data_stream.NumBuffersAnnouncedMinRequired()
 
-        for _ in range(buffer_count_max):
-            buffer = data_stream.AllocAndAnnounceBuffer(payload_size)
-            data_stream.QueueBuffer(buffer)
+        # Minimum number of required buffers
+        buffer_count_max = m_data_stream.NumBuffersAnnouncedMinRequired()
 
-        # Sperrung schreibbarer Knoten während der Erfassung
+        # Allocate buffers and add them to the pool
+        for buffer_count in range(buffer_count_max):
+            buffer = m_data_stream.AllocAndAnnounceBuffer(payload_size)
+            m_data_stream.QueueBuffer(buffer)
+
+        # Lock writeable nodes during acquisition
         remote_nodemap.FindNode("TLParamsLocked").SetValue(1)
 
-        print("Starte Erfassung...")
-        data_stream.StartAcquisition()
+        print("Starting acquisition...")
+        m_data_stream.StartAcquisition()
         remote_nodemap.FindNode("AcquisitionStart").Execute()
         remote_nodemap.FindNode("AcquisitionStart").WaitUntilDone()
 
-        print("Erhalte 1 Bild...")
+        print("Getting 1 image...")
         for _ in range(1):
             try:
-                buffer = data_stream.WaitForFinishedBuffer(5000)
+                buffer = m_data_stream.WaitForFinishedBuffer(5000)
 
-                # Bild aus dem Buffer erstellen
                 image = ids_peak_ipl.Image.CreateFromSizeAndBuffer(
                     buffer.PixelFormat(),
                     buffer.BasePtr(),
@@ -105,48 +111,47 @@ def main():
                     buffer.Height()
                 )
                 rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_Fast)
+                image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\tim3.png"
+                ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
                 
-                # Temporärer Speicherort für das Bild
-                temp_image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\temp.png"
-                ids_peak_ipl.ImageWriter.Write(temp_image_path, rgb_img)
+                # Open image with PIL
+                img = Image.open(image_path)
                 
-                # Bild mit PIL öffnen
-                img = Image.open(temp_image_path)
-                
-                # Gamma-Korrektur anwenden
+                # Apply gamma correction
                 img = apply_gamma_correction(img)
                 
-                # Helligkeit erhöhen
+                # Increase brightness
                 img = increase_brightness(img)
                 
-                # Speichern des bearbeiteten Bildes
-                final_image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\clean_image.png"
-                img.save(final_image_path)
+                # Increase brightness of each pixel by 100
+                img = img.point(lambda p: p + 100)
                 
-                # Buffer zurück in die Warteschlange
-                data_stream.QueueBuffer(buffer)
+                # Save the processed image
+                img.save(image_path)
+                
+                m_data_stream.QueueBuffer(buffer)
             except Exception as e:
-                print(f"Ausnahme: {e}")
+                print(f"Exception: {e}")
 
-        print("Beende Erfassung...")
+        print("Stopping acquisition...")
         remote_nodemap.FindNode("AcquisitionStop").Execute()
         remote_nodemap.FindNode("AcquisitionStop").WaitUntilDone()
 
-        data_stream.StopAcquisition(ids_peak.AcquisitionStopMode_Default)
+        m_data_stream.StopAcquisition(ids_peak.AcquisitionStopMode_Default)
 
-        # Buffer entfernen
-        data_stream.Flush(ids_peak.DataStreamFlushMode_DiscardAll)
+        # Remove buffers from any associated queue
+        m_data_stream.Flush(ids_peak.DataStreamFlushMode_DiscardAll)
 
-        for buffer in data_stream.AnnouncedBuffers():
-            data_stream.RevokeBuffer(buffer)
+        for buffer in m_data_stream.AnnouncedBuffers():
+            m_data_stream.RevokeBuffer(buffer)
 
-        # Schreibbare Knoten entsperren
+        # Unlock writeable nodes again
         remote_nodemap.FindNode("TLParamsLocked").SetValue(0)
 
-        print(f"Letzter automatischer Durchschnitt: {controller.GetLastAutoAverage()}")
+        print(f"LastAutoAverage: {controller.GetLastAutoAverage()}")
 
     except Exception as e:
-        print(f"AUSNAHME: {e}")
+        print(f"EXCEPTION: {e}")
         return -2
 
     finally:
