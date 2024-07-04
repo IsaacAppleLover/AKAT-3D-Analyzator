@@ -117,7 +117,7 @@ def main():
                 ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
                 
                 # Open image with PIL
-                img = Image.open(image_path)
+                #img = Image.open(image_path)
                 
                 # Apply gamma correction
                 #img = ids_peak_ipl.GammaCorrector.SetGammaCorrectionValue(img, 0.45)
