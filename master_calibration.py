@@ -50,3 +50,17 @@ def extrinsicCalibration(images_path_left, images_path_right, chessboard_size, s
     objp = np.zeros((np.prod(chessboard_size), 3), dtype=np.float32)
     objp[:, :2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1, 2)
     objp *= square_size
+
+    # Arrays to store object points and image points from all the images
+    objpoints = []  # 3D points in real world space
+    imgpoints_left = []  # 2D points in image plane for left camera
+    imgpoints_right = []  # 2D points in image plane for right camera
+
+    # Load all image pairs
+    images_left = glob.glob(images_path_left)
+    images_right = glob.glob(images_path_right)
+
+    # Make sure the number of images match
+    assert len(images_left) == len(images_right), "The number of left and right images must be the same"
+
+    

@@ -43,9 +43,9 @@ for fname in images:
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 # Save the calibration result for later use
-np.savez('camera_calibration_links.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
+np.savez('intrinsic_calibration_links.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
 
-data = load('camera_calibration_links.npz')
+data = load('intrinsic_calibration_links.npz')
 lst = data.files
 for item in lst:
     print(item)

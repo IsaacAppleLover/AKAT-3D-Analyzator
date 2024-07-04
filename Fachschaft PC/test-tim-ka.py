@@ -111,6 +111,7 @@ def main():
                     buffer.Height()
                 )
                 rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_RGB12, ids_peak_ipl.ConversionMode_HighQuality)
+                rgb_img = ids_peak_ipl.GammaCorrector.SetGammaCorrectionValue(rgb_img, 0.45)
                 image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\not_black.png"
                 ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
                 
@@ -118,16 +119,16 @@ def main():
                 img = Image.open(image_path)
                 
                 # Apply gamma correction
-                img = apply_gamma_correction(img)
+                #img = ids_peak_ipl.GammaCorrector.SetGammaCorrectionValue(img, 0.45)
                 
                 # Increase brightness
-                img = increase_brightness(img)
+                #img = increase_brightness(img)
                 
                 # Increase brightness of each pixel by 100
-                img = img.point(lambda p: p + 100)
+                #img = img.point(lambda p: p + 100)
                 
                 # Save the processed image
-                img.save(image_path)
+                #img.save(image_path)
                 
                 m_data_stream.QueueBuffer(buffer)
             except Exception as e:
