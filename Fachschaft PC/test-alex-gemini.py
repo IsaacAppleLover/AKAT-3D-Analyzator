@@ -16,6 +16,7 @@ nodemaps = []
 buffers = []
 controllers = []
 threads = []
+data_streams = []
 
 
 class FinishedCallback(
@@ -72,38 +73,26 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 		ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
 
 		# Open image with PIL
-		img = Image.open(image_path)
+		#img = Image.open(image_path)
 
 		# Apply gamma correction
-		img = apply_gamma_correction(img)
+		#img = apply_gamma_correction(img)
 
 		# Increase brightness
-		img = increase_brightness(img)
+		#img = increase_brightness(img)
 
 		# Save the processed image
-		img.save(image_path)
+		#img.save(image_path)
 
 		# Queue the buffer back to the data stream
 		m_data_stream.QueueBuffer(buffer)
-  
-		print("Stopping acquisition...")
-		remote_nodemap.FindNode("AcquisitionStop").Execute()
-		remote_nodemap.FindNode("AcquisitionStop").WaitUntilDone()
-		# Remove buffers from any associated queue
-		m_data_stream.Flush(ids_peak.DataStreamFlushMode_DiscardAll)
-
-		for buffer in m_data_stream.AnnouncedBuffers():
-			# Remove buffer from the transport layer
-			m_data_stream.RevokeBuffer(buffer)
-
-		# Unlock writeable nodes again
-		remote_nodemap.FindNode("TLParamsLocked").SetValue(0)
-
-		# Last auto average for the controller working on a mono image
-		print(f"LastAutoAverage: {controller.GetLastAutoAverage()}")
         
 	except Exception as e:
 		print(f"Exception in capture_image: {e}")
+
+
+
+
 
 def main():
 	barrier = threading.Barrier(2)
@@ -115,7 +104,7 @@ def main():
 
 		
 		for i in range(2):
-			print(i)
+			print("Startting Camera Number: {i}")
 			# Create a DeviceManager object
 			device_manager = ids_peak.DeviceManager.Instance()
 			# Update the DeviceManager
@@ -187,7 +176,7 @@ def main():
 			gainFinished = ComponentGainFinishedCallback(controller)
 
 			# Open first data stream
-			m_data_stream = device.DataStreams()[i].OpenDataStream()
+			m_data_stream = device.DataStreams()[0].OpenDataStream()
 			
 			# Buffer size
 			payload_size = remote_nodemap.FindNode("PayloadSize").Value()
@@ -209,9 +198,11 @@ def main():
 			nodemaps.append(remote_nodemap)
 			buffers.append(buffer)
 			controllers.append(controller)
+			data_streams.append(m_data_stream)
 			LeftItIs = False
 			if i == 0:
 				LeftItIs = True
+			print("Starting Thread!")
 			thread = threading.Thread(target=capture_image, args=(remote_nodemap, barrier, m_data_stream, controller, LeftItIs))
 			threads.append(thread)
 			thread.start()
@@ -219,7 +210,27 @@ def main():
 		for thread in threads:
 			thread.join()
    
+		for i in range(2):
+			remote_nodemap = nodemaps[i]
+			m_data_stream = data_streams[i]
+			buffer = buffers[i]
+			controller = controllers[i]
+   
+			print("Stopping acquisition...")
+			remote_nodemap.FindNode("AcquisitionStop").Execute()
+			remote_nodemap.FindNode("AcquisitionStop").WaitUntilDone()
+			# Remove buffers from any associated queue
+			m_data_stream.Flush(ids_peak.DataStreamFlushMode_DiscardAll)
 
+			for buffer in m_data_stream.AnnouncedBuffers():
+				# Remove buffer from the transport layer
+				m_data_stream.RevokeBuffer(buffer)
+
+			# Unlock writeable nodes again
+			remote_nodemap.FindNode("TLParamsLocked").SetValue(0)
+
+			# Last auto average for the controller working on a mono image
+			print(f"LastAutoAverage: {controller.GetLastAutoAverage()}")
 			
 	except Exception as e:
 			print(f"EXCEPTION: {e}")
