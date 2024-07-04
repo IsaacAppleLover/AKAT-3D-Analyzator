@@ -105,12 +105,12 @@ def main():
 
                 image = ids_peak_ipl.Image.CreateFromSizeAndBuffer(
                     buffer.PixelFormat(),
-                    buffer,
+                    buffer.BasePtr(),
                     buffer.Size(),
                     buffer.Width(),
                     buffer.Height()
                 )
-                rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_Fast)
+                rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_RGB8, ids_peak_ipl.ConversionMode_Classic)
                 image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\tim3.png"
                 ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
                 
