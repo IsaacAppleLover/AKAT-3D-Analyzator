@@ -101,11 +101,11 @@ def main():
         print("Getting 1 image...")
         for _ in range(1):
             try:
-                buffer = m_data_stream.WaitForFinishedBuffer('INFINITE_NUMBER')
+                buffer = m_data_stream.WaitForFinishedBuffer('5000')
 
                 image = ids_peak_ipl.Image.CreateFromSizeAndBuffer(
                     buffer.PixelFormat(),
-                    buffer.BasePtr(),
+                    buffer,
                     buffer.Size(),
                     buffer.Width(),
                     buffer.Height()
