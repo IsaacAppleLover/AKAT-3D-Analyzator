@@ -1,5 +1,5 @@
 import threading
-
+import time
 from ids_peak import ids_peak, ids_peak_ipl_extension
 from ids_peak_ipl import ids_peak_ipl
 from ids_peak_afl import ids_peak_afl
@@ -65,11 +65,11 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 		rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_Fast)
 
 		if LeftItIs == True:
-			image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\left.png"
-			print("LEFT")
+			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\left_{time.time()}.bmp"
+			print(f"LEFT {time.time()}")
 		else:
-			image_path = "C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\right.png"
-			print("RIGHT")
+			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\right_{time.time()}.bmp"
+			print(f"RIGHT {time.time()}")
 		ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
 
 		# Open image with PIL
@@ -104,7 +104,7 @@ def main():
 
 		
 		for i in range(2):
-			print("Startting Camera Number: {i}")
+			print(f"Startting Camera Number: {i}")
 			# Create a DeviceManager object
 			device_manager = ids_peak.DeviceManager.Instance()
 			# Update the DeviceManager
