@@ -6,6 +6,7 @@ from ids_peak_afl import ids_peak_afl
 from PIL import Image, ImageEnhance
 import numpy as np
 import sys
+import cv2
 
 m_device = None
 m_dataStream = None
@@ -47,49 +48,44 @@ def increase_brightness(image, factor=2.0):
 	return enhancer.enhance(factor)
 
 def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
-	try:
-		barrier.wait()
-		print("Starting acquisition...")
-		m_data_stream.StartAcquisition()
-		remote_nodemap.FindNode("AcquisitionStart").Execute()
-		remote_nodemap.FindNode("AcquisitionStart").WaitUntilDone()
-		barrier.wait()
-		# Get a buffer from the data stream
-		buffer = m_data_stream.WaitForFinishedBuffer(5000)
-		image = ids_peak_ipl.Image.CreateFromSizeAndBuffer(
-			buffer.PixelFormat(),
-			buffer.BasePtr(),
-			buffer.Size(),
-			buffer.Width(),
-			buffer.Height()
-		)
-		rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_Fast)
+    try:
+        barrier.wait()
+        print("Starting acquisition...")
+        m_data_stream.StartAcquisition()
+        remote_nodemap.FindNode("AcquisitionStart").Execute()
+        remote_nodemap.FindNode("AcquisitionStart").WaitUntilDone()
+        barrier.wait()
 
-		if LeftItIs == True:
-			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\left_{time.time()}.bmp"
-			print(f"LEFT {time.time()}")
-		else:
-			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\right_{time.time()}.bmp"
-			print(f"RIGHT {time.time()}")
-		ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
+        while True:
+            # Get a buffer from the data stream
+            buffer = m_data_stream.WaitForFinishedBuffer(5000)
+            image = ids_peak_ipl.Image.CreateFromSizeAndBuffer(
+                buffer.PixelFormat(),
+                buffer.BasePtr(),
+                buffer.Size(),
+                buffer.Width(),
+                buffer.Height()
+            )
+            rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_Fast)
 
-		# Open image with PIL
-		#img = Image.open(image_path)
+            # Convert to OpenCV format
+            frame = np.array(rgb_img, dtype=np.uint8).reshape((rgb_img.Height(), rgb_img.Width(), 4))
 
-		# Apply gamma correction
-		#img = apply_gamma_correction(img)
+            # Display the frame
+            cv2.imshow("Live Stream", frame)
 
-		# Increase brightness
-		#img = increase_brightness(img)
+            # Press 'q' to exit the live stream
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
-		# Save the processed image
-		#img.save(image_path)
+            # Queue the buffer back to the data stream
+            m_data_stream.QueueBuffer(buffer)
 
-		# Queue the buffer back to the data stream
-		m_data_stream.QueueBuffer(buffer)
-        
-	except Exception as e:
-		print(f"Exception in capture_image: {e}")
+    except Exception as e:
+        print(f"Exception in capture_image: {e}")
+
+    finally:
+        cv2.destroyAllWindows()
 
 
 
@@ -141,9 +137,7 @@ def main():
 			min_gain = remote_nodemap.FindNode("Gain").Minimum()
 			max_gain = remote_nodemap.FindNode("Gain").Maximum()
 
-			print(f'max_gain = ' + max_gain)
-
-			remote_nodemap.FindNode("Gain").SetValue(max_gain)
+			#remote_nodemap.FindNode("Gain").SetValue(max_gain)
 
 			# Manually set exposure time
 			exposure_node = remote_nodemap.FindNode("ExposureTime")
@@ -151,7 +145,6 @@ def main():
 			min_exposure_time = remote_nodemap.FindNode("ExposureTime").Minimum()
 			max_exposure_time = remote_nodemap.FindNode("ExposureTime").Maximum()
 			desired_exposure_time = 600  # Example: 1 millisecond
-			#remote_nodemap.FindNode("ExposureTime").SetValue(desired_exposure_time)
 			#exposure_node.SetValue(max_exposure_time)
 
 			# Load default camera settings
