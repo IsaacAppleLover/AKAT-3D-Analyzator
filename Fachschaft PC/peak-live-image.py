@@ -72,7 +72,7 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
             frame = np.array(rgb_img, dtype=np.uint8).reshape((rgb_img.Height(), rgb_img.Width(), 4))
 
             # Display the frame
-            cv2.imshow("Live Stream", frame)
+            cv2.imshow("Live Stream", rgb_img)
 
             # Press 'q' to exit the live stream
             if cv2.waitKey(1) & 0xFF == ord('q'):
