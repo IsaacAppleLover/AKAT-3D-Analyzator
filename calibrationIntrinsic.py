@@ -3,55 +3,62 @@ import numpy as np
 from numpy import load
 import glob
 
-# Set the chessboard size and the size of the squares
-chessboard_size = (9, 6)
-square_size = 1.0  # Sie können dies auf die tatsächliche Größe der Schachbrettquadrate setzen
+def prepare_object_points(chessboard_size, square_size):
+    objp = np.zeros((np.prod(chessboard_size), 3), dtype=np.float32)
+    objp[:, :2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1, 2)
+    objp *= square_size
+    return objp
 
-# Prepare object points
-objp = np.zeros((np.prod(chessboard_size), 3), dtype=np.float32)
-objp[:, :2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1, 2)
-objp *= square_size
+def load_images(path):
+    return glob.glob(path)
 
-# Arrays to store object points and image points from all the images
-objpoints = []
-imgpoints = []
+def find_corners(images, chessboard_size, objp):
+    objpoints = []
+    imgpoints = []
 
-# Load all images using glob
-images = glob.glob('Utils/Images/test/Chessboard/links/*.png')
+    for fname in images:
+        img = cv2.imread(fname)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        ret, corners = cv2.findChessboardCorners(gray, chessboard_size, None)
 
-for fname in images:
-    img = cv2.imread(fname)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        if ret:
+            objpoints.append(objp)
+            corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1),
+                                        criteria=(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 80, 0.001))
+            imgpoints.append(corners2)
+            cv2.drawChessboardCorners(img, chessboard_size, corners2, ret)
+            cv2.imshow('Chessboard Corners', img)
+            cv2.waitKey()
 
-    # Find the chess board corners
-    ret, corners = cv2.findChessboardCorners(gray, chessboard_size, None)
+    cv2.destroyAllWindows()
+    return objpoints, imgpoints, gray.shape[::-1]
 
-    # If found, add object points, image points (after refining them)
-    if ret:
-        objpoints.append(objp)
-        corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1),
-                                    criteria=(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 80, 0.001))
-        imgpoints.append(corners2)
+def calibrate_camera(objpoints, imgpoints, image_shape):
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, image_shape, None, None)
+    return ret, mtx, dist, rvecs, tvecs
 
-        # Draw and display the corners
-        cv2.drawChessboardCorners(img, chessboard_size, corners2, ret)
-        cv2.imshow('Chessboard Corners', img)
-        cv2.waitKey()  # Show each image for 500 ms
-#cv2.destroyAllWindows()
+def save_calibration_parameters(filename, mtx, dist, rvecs, tvecs):
+    np.savez(filename, mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
 
-# Calibrate the camera
-ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+def load_calibration_parameters(filename):
+    data = load(filename)
+    return {item: data[item] for item in data.files}
 
-# Save the calibration result for later use
-np.savez('intrinsic_calibration_links.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
+def main():
+    chessboard_size = (9, 6)
+    square_size = 1.0
+    objp = prepare_object_points(chessboard_size, square_size)
+    images = load_images('Utils/Images/test/Chessboard/links/*.png')
+    objpoints, imgpoints, image_shape = find_corners(images, chessboard_size, objp)
+    ret, mtx, dist, rvecs, tvecs = calibrate_camera(objpoints, imgpoints, image_shape)
+    save_calibration_parameters('intrinsic_calibration_links.npz', mtx, dist, rvecs, tvecs)
+    calibration_data = load_calibration_parameters('intrinsic_calibration_links.npz')
 
-data = load('intrinsic_calibration_links.npz')
-lst = data.files
-for item in lst:
-    print(item)
-    print(data[item])
+    for item, value in calibration_data.items():
+        print(item)
+        print(value)
 
+    print("Calibration completed and parameters saved.")
 
-print("Calibration completed and parameters saved.")
-
-
+if __name__ == "__main__":
+    main()
