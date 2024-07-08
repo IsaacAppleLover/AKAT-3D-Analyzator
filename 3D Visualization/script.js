@@ -24,11 +24,11 @@ const textureLoader = new THREE.TextureLoader();
 let originalImage, depthMap;
 let isInitialized = false;
 
-textureLoader.load("Azrael2.jpg", function (texture) {
+textureLoader.load("rechts-no-muster.png", function (texture) {
   originalImage = texture;
   init();
 });
-textureLoader.load("Azrael2DepthMap.jpg", function (texture) {
+textureLoader.load("Disparity_SGBM_1.png", function (texture) {
   depthMap = texture;
   init();
 });
