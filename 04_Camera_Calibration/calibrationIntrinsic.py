@@ -44,6 +44,17 @@ def load_calibration_parameters(filename):
     data = load(filename)
     return {item: data[item] for item in data.files}
 
+
+def undistort_image(image, mtx, dist):
+    h, w = image.shape[:2]
+    new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
+    undistorted_img = cv2.undistort(image, mtx, dist, None, new_camera_mtx)
+    x, y, w, h = roi
+    undistorted_img = undistorted_img[y:y+h, x:x+w]
+    return undistorted_img
+
+
+
 def main():
     chessboard_size = (9, 6)
     square_size = 1.0
