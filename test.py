@@ -74,7 +74,7 @@ def calibrate_camera(chessboard_size, image_paths):
             
             # Draw and display the corners
             cv2.drawChessboardCorners(image, chessboard_size, corners2, ret)
-            cv2.imshow('Chessboard Corners', image)
+            cv2.imshow('02_Chessboard Corners', image)
             cv2.waitKey(0)
 
     # Calibrate the camera,  function returns the camera matrix, distortion coefficients, rotation and translation vectors etc.
