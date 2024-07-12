@@ -5,7 +5,7 @@ from time import sleep
 
 # Replace 'COM3' with the correct port name for your Arduino
 ser = serial.Serial('COM3', 9600)
-#ser.open()
+#1ser.open()
 ser.flushInput()
 
 try:
