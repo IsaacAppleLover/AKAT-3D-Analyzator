@@ -36,7 +36,9 @@ from mainwindow import MainWindow
 def main():
     a = QApplication(sys.argv)
     w = MainWindow()
+    w2 = MainWindow()
     w.show()
+    w2.show()
 
     try:
         return a.exec()
