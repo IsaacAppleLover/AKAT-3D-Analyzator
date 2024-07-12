@@ -38,7 +38,7 @@ from display import Display
 
 VERSION = "1.4.0"
 FPS_LIMIT = 30
-TARGET_PIXEL_FORMAT = ids_peak_ipl.PixelFormatName_BGRa8
+TARGET_PIXEL_FORMAT = ids_peak_ipl.PixelFormatName_RGBa12
 
 
 class MainWindow(QMainWindow):
