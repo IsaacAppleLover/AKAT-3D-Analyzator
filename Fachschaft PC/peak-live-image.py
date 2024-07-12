@@ -67,7 +67,7 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
                 buffer.Height()
             )
             rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_Fast)
-
+			
             # Convert to OpenCV format
             frame = np.array(rgb_img, dtype=np.uint8).reshape((rgb_img.Height(), rgb_img.Width(), 4))
 

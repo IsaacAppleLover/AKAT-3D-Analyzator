@@ -63,7 +63,7 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 			buffer.Width(),
 			buffer.Height()
 		)
-		rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_Fast)
+		rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_HighQuality)
 
 		if LeftItIs == True:
 			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\left_{time.time()}.bmp"
@@ -141,7 +141,7 @@ def main():
 			min_gain = remote_nodemap.FindNode("Gain").Minimum()
 			max_gain = remote_nodemap.FindNode("Gain").Maximum()
 
-			print(f'max_gain = ' + max_gain)
+			#print(f'max_gain = ' + max_gain)
 
 			remote_nodemap.FindNode("Gain").SetValue(max_gain)
 
@@ -151,7 +151,7 @@ def main():
 			min_exposure_time = remote_nodemap.FindNode("ExposureTime").Minimum()
 			max_exposure_time = remote_nodemap.FindNode("ExposureTime").Maximum()
 			desired_exposure_time = 600  # Example: 1 millisecond
-			#remote_nodemap.FindNode("ExposureTime").SetValue(desired_exposure_time)
+			remote_nodemap.FindNode("ExposureTime").SetValue(desired_exposure_time)
 			#exposure_node.SetValue(max_exposure_time)
 
 			# Load default camera settings
