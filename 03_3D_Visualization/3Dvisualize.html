@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stereo 3D-Model Test</title>
     <style>
+      :root {
+        --background-color: #fff;
+        --button-background-color: #fff;
+        --button-text-color: #000;
+        --active-button-background-color: #4caf50;
+        --active-button-text-color: #fff;
+      }
+
       body {
         margin: 0;
         overflow: hidden;
+        background-color: var(--background-color);
       }
       .container {
         display: flex;
@@ -18,8 +27,6 @@
       .big-box {
         width: 50%;
         height: 100%;
-        background-color: lightblue;
-        border: 2px solid black;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -39,17 +46,36 @@
         margin: 0 10px;
         padding: 10px 20px;
         font-size: 16px;
+        background-color: var(--button-background-color);
+        color: var(--button-text-color);
+        border: none;
+        cursor: pointer;
       }
       .active-button {
         font-weight: bold;
-        background-color: #4caf50;
-        color: white;
+        background-color: var(--active-button-background-color);
+        color: var(--active-button-text-color);
       }
       .slider-container {
         margin-top: 10px;
       }
       input[type="range"] {
         width: 80%;
+      }
+      .theme-toggle-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+      }
+      .theme-toggle-button.sun::before {
+        content: "🌞";
+      }
+      .theme-toggle-button.moon::before {
+        content: "🌜";
       }
     </style>
   </head>
@@ -74,6 +100,10 @@
             />
           </div>
         </div>
+        <button
+          id="themeToggleButton1"
+          class="theme-toggle-button sun"
+        ></button>
       </div>
       <div class="big-box" id="container2">
         <canvas id="canvas2"></canvas>
@@ -94,6 +124,10 @@
             />
           </div>
         </div>
+        <button
+          id="themeToggleButton2"
+          class="theme-toggle-button sun"
+        ></button>
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
