@@ -1,136 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stereo 3D-Model Test</title>
-    <style>
-      :root {
-        --background-color: #fff;
-        --button-background-color: #fff;
-        --button-text-color: #000;
-        --active-button-background-color: #4caf50;
-        --active-button-text-color: #fff;
-      }
 
-      body {
-        margin: 0;
-        overflow: hidden;
-        background-color: var(--background-color);
-      }
-      .container {
-        display: flex;
-        width: 100vw;
-        height: 100vh;
-        position: relative;
-      }
-      .big-box {
-        width: 50%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-      }
-      .controls-container {
-        position: absolute;
-        bottom: 20px;
-        text-align: center;
-        transition: opacity 0.3s;
-      }
-      .hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
-      button {
-        margin: 0 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: var(--button-background-color);
-        color: var(--button-text-color);
-        border: none;
-        cursor: pointer;
-      }
-      .active-button {
-        font-weight: bold;
-        background-color: var(--active-button-background-color);
-        color: var(--active-button-text-color);
-      }
-      .slider-container {
-        margin-top: 10px;
-      }
-      input[type="range"] {
-        width: 80%;
-      }
-      .theme-toggle-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 24px;
-      }
-      .theme-toggle-button.sun::before {
-        content: "🌞";
-      }
-      .theme-toggle-button.moon::before {
-        content: "🌜";
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="big-box" id="container1">
-        <canvas id="canvas1"></canvas>
-        <div class="controls-container" id="controlsContainer1">
-          <div class="button-container">
-            <button id="solidButton1" class="active-button">Solid</button>
-            <button id="pointCloudButton1">Point Cloud</button>
-            <button id="wireframeButton1">Wireframe</button>
-          </div>
-          <div class="slider-container">
-            <input
-              type="range"
-              id="depthSlider1"
-              min="0"
-              max="5"
-              step="0.1"
-              value="1"
-            />
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stereo 3D-Model Test</title>
+  <style>
+    :root {
+      --background-color: #fff;
+      --button-background-color: #fff;
+      --button-text-color: #000;
+      --active-button-background-color: #4caf50;
+      --active-button-text-color: #fff;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: var(--background-color);
+    }
+
+    .container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .big-box {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .controls-container {
+      position: absolute;
+      bottom: 20px;
+      text-align: center;
+      transition: opacity 0.3s;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: var(--button-background-color);
+      color: var(--button-text-color);
+      border: none;
+      cursor: pointer;
+    }
+
+    .active-button {
+      font-weight: bold;
+      background-color: var(--active-button-background-color);
+      color: var(--active-button-text-color);
+    }
+
+    .slider-container {
+      margin-top: 10px;
+    }
+
+    input[type="range"] {
+      width: 80%;
+    }
+
+    .theme-toggle-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .theme-toggle-button.sun::before {
+      content: "🌞";
+    }
+
+    .theme-toggle-button.moon::before {
+      content: "🌜";
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="big-box" id="container1">
+      <canvas id="canvas1"></canvas>
+      <div class="controls-container" id="controlsContainer1">
+        <div class="button-container">
+          <button id="solidButton1" class="active-button">Solid</button>
+          <button id="pointCloudButton1">Point Cloud</button>
+          <button id="wireframeButton1">Wireframe</button>
         </div>
-        <button
-          id="themeToggleButton1"
-          class="theme-toggle-button sun"
-        ></button>
-      </div>
-      <div class="big-box" id="container2">
-        <canvas id="canvas2"></canvas>
-        <div class="controls-container" id="controlsContainer2">
-          <div class="button-container">
-            <button id="solidButton2" class="active-button">Solid</button>
-            <button id="pointCloudButton2">Point Cloud</button>
-            <button id="wireframeButton2">Wireframe</button>
-          </div>
-          <div class="slider-container">
-            <input
-              type="range"
-              id="depthSlider2"
-              min="0"
-              max="5"
-              step="0.1"
-              value="1"
-            />
-          </div>
+        <div class="slider-container">
+          <input type="range" id="depthSlider1" min="0" max="5" step="0.1" value="1" />
         </div>
-        <button
-          id="themeToggleButton2"
-          class="theme-toggle-button sun"
-        ></button>
       </div>
+      <button id="themeToggleButton1" class="theme-toggle-button sun"></button>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
-  </body>
+    <div class="big-box" id="container2">
+      <canvas id="canvas2"></canvas>
+      <div class="controls-container" id="controlsContainer2">
+        <div class="button-container">
+          <button id="solidButton2" class="active-button">Solid</button>
+          <button id="pointCloudButton2">Point Cloud</button>
+          <button id="wireframeButton2">Wireframe</button>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="depthSlider2" min="0" max="5" step="0.1" value="1" />
+        </div>
+      </div>
+      <button id="themeToggleButton2" class="theme-toggle-button sun"></button>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
 </html>

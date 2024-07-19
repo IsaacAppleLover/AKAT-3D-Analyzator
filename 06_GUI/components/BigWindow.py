@@ -41,7 +41,7 @@ class BigWindow(CustomWindow):
 
         self.label.rgb_values_signal.connect(self.update_rgb_label)
 
-        self.load_and_display_image(f"{BigWindow.IMAGE_DIR}Azrael2.jpg")
+        self.load_and_display_image(f"{BigWindow.IMAGE_DIR}Stereo-Test02.jpg")
 
         self.set_rgb_label_css('background-color: transparent; border: transparent; color: transparent;')
 

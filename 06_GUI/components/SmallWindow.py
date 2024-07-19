@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QLabel, QCheckBox, QWidget
 from PyQt5.QtCore import Qt, pyqtSignal
 from .CustomWindow import CustomWindow
 from .Button import Button
+from .InformationLabel import InformationLabel
 
 class SmallWindow(CustomWindow):
     checkbox_state_changed = pyqtSignal(bool)
@@ -17,13 +18,20 @@ class SmallWindow(CustomWindow):
 
         layout = QVBoxLayout()
 
-        button1 = Button('Button 1')
-        button2 = Button('Button 2')
-        button3 = Button('Button 3')
+        self.button1 = Button('Button 1')
+        self.informationLabel1 = InformationLabel(true_text="This text is green.", false_text="This text is red.")
+        self.button2 = Button('Button 2')
+        self.informationLabel2 = InformationLabel(true_text="All systems go.", false_text="Error detected.")
+        self.button3 = Button('Button 3')
 
-        layout.addWidget(button1)
-        layout.addWidget(button2)
-        layout.addWidget(button3)
+        self.button1.clicked.connect(self.toggle_label1)
+        self.button2.clicked.connect(self.toggle_label2)
+
+        layout.addWidget(self.button1)
+        layout.addWidget(self.informationLabel1)
+        layout.addWidget(self.button2)
+        layout.addWidget(self.informationLabel2)
+        layout.addWidget(self.button3)
 
         checkbox = QCheckBox('Show Label')
         checkbox.stateChanged.connect(self.emit_checkbox_state)
@@ -32,6 +40,14 @@ class SmallWindow(CustomWindow):
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
+
+    def toggle_label1(self):
+        new_value = not self.informationLabel1.value
+        self.informationLabel1.set_value(new_value)
+
+    def toggle_label2(self):
+        new_value = not self.informationLabel2.value
+        self.informationLabel2.set_value(new_value)
 
     def emit_checkbox_state(self, state):
         self.checkbox_state_changed.emit(state != Qt.Checked)

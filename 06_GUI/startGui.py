@@ -4,6 +4,20 @@ from PyQt5.QtGui import QFontDatabase, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QSizePolicy
 from components import Button, CustomWindow, BigWindow, SmallWindow
 
+
+COLOR_BLACK = "\033[30m"
+COLOR_RED = "\033[31m"
+COLOR_GREEN = "\033[32m"
+COLOR_YELLOW = "\033[33m"
+COLOR_BLUE = "\033[34m"
+COLOR_MAGENTA = "\033[35m"
+COLOR_CYAN = "\033[36m"
+COLOR_WHITE = "\033[37m"
+COLOR_RESET = "\033[0m"
+
+def color_text(text, color):
+    return f"{color}{text}{COLOR_RESET}"
+
 class StartWindow(CustomWindow):
     def initUI(self):
         self.setWindowTitle('Startfenster')
@@ -57,16 +71,17 @@ class StartWindow(CustomWindow):
         self.hide()
 
         screens = QApplication.screens()
+        print(color_text("Look for Screens...", COLOR_BLUE))
         if len(screens) > 1:
             # Show the big window on the second screen
-            print("Multiple screens detected")
+            print(color_text("\tMultiple screens detected", COLOR_GREEN))
             second_screen = screens[1]
             self.big_window = BigWindow()
             self.big_window.setGeometry(second_screen.geometry())
             self.big_window.showMaximized()
         else:
             # Show the big window on the main screen
-            print("Single screen detected")
+            print(color_text("\tSingle screen detected", COLOR_YELLOW))
             self.big_window = BigWindow()
             self.big_window.showMaximized()
 
@@ -84,20 +99,26 @@ class StartWindow(CustomWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
+    print(color_text("Look for CSS-File...", COLOR_BLUE))
     # Apply the stylesheet from a CSS file
-    with open("styles.css", "r") as file:
-        app.setStyleSheet(file.read())
+    try:
+        with open("styles.css", "r") as file:
+            app.setStyleSheet(file.read())
+            print(color_text("\tCSS file 'styles.css' loaded successfully.", COLOR_GREEN))
+    except FileNotFoundError:
+        print(color_text("\tCSS file 'styles.css' not found.", COLOR_RED))
 
     # List all available fonts
     font_db = QFontDatabase()
     available_fonts = font_db.families()
 
+    print(color_text("Look for Font...", COLOR_BLUE))
     # Check if Montserrat is available, otherwise use Arial
     if "Montserrat" in available_fonts:
-        print("Montserrat font is available.")
+        print(color_text("\tMontserrat font is available.", COLOR_GREEN))
         font = QFont("Montserrat", 8)
     else:
-        print("Montserrat font is not available. Using Arial instead.")
+        print(color_text("\t Montserrat font is not available. Using Arial instead.", COLOR_YELLOW))
         font = QFont("Arial", 8)
 
     app.setFont(font)
