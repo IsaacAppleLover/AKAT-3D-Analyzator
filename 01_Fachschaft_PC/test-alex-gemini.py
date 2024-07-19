@@ -159,7 +159,7 @@ def main():
 			remote_nodemap.FindNode("UserSetLoad").Execute()
 			remote_nodemap.FindNode("UserSetLoad").WaitUntilDone()
 
-			# Auto brightness mode is split up in two components
+			# Auto brightness mode is split up in two grtgr
 			# so you can't use the regular controller.SetMode etc.
 			# NOTE: mode is reset to off automatically after the operation finishes
 			# when using PEAK_AFL_CONTROLLER_AUTOMODE_ONCE

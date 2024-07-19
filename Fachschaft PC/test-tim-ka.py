@@ -20,7 +20,7 @@ for buffer_count in range(buffer_count_max):
     buffer = data_stream.AllocAndAnnounceBuffer(payload_size)
     data_stream.QueueBuffer(buffer)
 
-# Start image acquisition
+# Components image acquisition
 device.RemoteDevice().NodeMaps()[0].FindNode("TLParamsLocked").SetValue(1)
 print("Starting acquisition...")
 data_stream.StartAcquisition()

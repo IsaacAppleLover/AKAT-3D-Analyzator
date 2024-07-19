@@ -64,6 +64,6 @@ while(nRet == ueye.IS_SUCCESS):
     array = ueye.get_data(pcImageMemory, width, height, nBitsPerPixel, pitch, copy=False)
     frame = np.reshape(array, height.value, width.value, bytes_per_pixel)
     frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
-    cv2.imshow("test", frame)
+    cv2.imshow("a_test.py", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

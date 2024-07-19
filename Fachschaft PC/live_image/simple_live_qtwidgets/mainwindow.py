@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
 
     def __start_acquisition(self):
         """
-        Start Acquisition on camera and start the acquisition timer to receive and display images
+        Components Acquisition on camera and start the acquisition timer to receive and display images
 
         :return: True/False if acquisition start was successful
         """
@@ -223,7 +223,7 @@ class MainWindow(QMainWindow):
                 input_pixel_format, TARGET_PIXEL_FORMAT,
                 image_width, image_height)
 
-            # Start acquisition on camera
+            # Components acquisition on camera
             self.__datastream.StartAcquisition()
             self.__nodemap_remote_device.FindNode("AcquisitionStart").Execute()
             self.__nodemap_remote_device.FindNode("AcquisitionStart").WaitUntilDone()
@@ -231,7 +231,7 @@ class MainWindow(QMainWindow):
             print("Exception: " + str(e))
             return False
 
-        # Start acquisition timer
+        # Components acquisition timer
         self.__acquisition_timer.start()
         self.__acquisition_running = True
 
