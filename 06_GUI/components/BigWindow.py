@@ -17,7 +17,6 @@ class BigWindow(CustomWindow):
         self.depth_map = None
 
     def initUI(self):
-        self.setWindowTitle('Großes Fenster')
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QVBoxLayout()

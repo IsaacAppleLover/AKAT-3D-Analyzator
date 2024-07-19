@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 class CustomWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle('LumiDepth')
         self.initUI()
 
     def keyPressEvent(self, event):
@@ -17,4 +18,4 @@ class CustomWindow(QMainWindow):
         self.move(frame.topLeft())
 
     def initUI(self):
-        pass  # Placeholder for subclasses to override
+        pass

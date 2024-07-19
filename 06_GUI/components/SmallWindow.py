@@ -1,8 +1,10 @@
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QCheckBox, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QCheckBox, QWidget, QApplication
 from PyQt5.QtCore import Qt, pyqtSignal
 from .CustomWindow import CustomWindow
 from .Button import Button
 from .InformationLabel import InformationLabel
+from .MenuBar import MenuBar  # Import the MenuBar component
+import sys
 
 class SmallWindow(CustomWindow):
     checkbox_state_changed = pyqtSignal(bool)
@@ -12,7 +14,6 @@ class SmallWindow(CustomWindow):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Kleines Fenster')
         self.setGeometry(300, 300, 400, 200)
         self.center()
 
@@ -41,6 +42,10 @@ class SmallWindow(CustomWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
+        # Use the custom MenuBar
+        self.menu_bar = MenuBar(self)
+        self.setMenuBar(self.menu_bar)
+
     def toggle_label1(self):
         new_value = not self.informationLabel1.value
         self.informationLabel1.set_value(new_value)
@@ -51,3 +56,9 @@ class SmallWindow(CustomWindow):
 
     def emit_checkbox_state(self, state):
         self.checkbox_state_changed.emit(state != Qt.Checked)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = SmallWindow()
+    window.show()
+    sys.exit(app.exec_())

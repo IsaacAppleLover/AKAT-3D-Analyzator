@@ -1,0 +1,60 @@
+/* Style for the QMenuBar */
+QMenuBar {
+    background-color: #ff5733; /* Rot */
+    color: #ffffff;
+}
+
+/* Style for the QMenu */
+QMenu {
+    background-color: #33ff57; /* Grün */
+    color: #ffffff;
+}
+
+/* Style for the QMenu::item */
+QMenu::item {
+    background-color: #3357ff; /* Blau */
+    color: #ffffff;
+}
+
+/* Style for the QMenu::item:selected */
+QMenu::item:selected {
+    background-color: #ff33a8; /* Pink */
+    color: #ffffff;
+}
+
+/* Style for QAction */
+QAction {
+    background-color: #33d6ff; /* Hellblau */
+    color: #ffffff;
+}
+
+/* Style for QMenuBar::item */
+QMenuBar::item {
+    background-color: #a833ff; /* Violett */
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* Style for QMenuBar::item:selected */
+QMenuBar::item:selected {
+    background-color: #ff8c33; /* Orange */
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* Style for QMenuBar::item:pressed */
+QMenuBar::item:pressed {
+    background-color: #33ff8c; /* Hellgrün */
+    color: #ffffff;
+}
+
+/* Style for QMenu::item:hover */
+QMenu::item:hover {
+    cursor: pointer;
+}
+
+/* Style for QMessageBox */
+QMessageBox {
+    background-color: #ffd633; /* Gelb */
+    color: #000000;
+}

@@ -20,7 +20,6 @@ def color_text(text, color):
 
 class StartWindow(CustomWindow):
     def initUI(self):
-        self.setWindowTitle('Startfenster')
         self.setGeometry(100, 100, 250, 100)
         self.center()
 

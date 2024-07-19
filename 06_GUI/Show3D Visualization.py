@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPu
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Path to the HTML file
-file_path = os.path.abspath('./03_3D_Visualization/3Dvisualize.html')
+file_path = os.path.abspath('./../03_3D_Visualization/3Dvisualize.html')
 os.chdir(os.path.dirname(file_path))
 
 # Function to start the HTTP server
