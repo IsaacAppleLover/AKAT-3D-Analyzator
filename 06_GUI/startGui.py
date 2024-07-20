@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFontDatabase, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QSizePolicy
 from components import Button, CustomWindow, BigWindow, SmallWindow
-
+from components.BigWindow_Stereo import BigWindow_Stereo
 
 COLOR_BLACK = "\033[30m"
 COLOR_RED = "\033[31m"
@@ -75,13 +75,16 @@ class StartWindow(CustomWindow):
             # Show the big window on the second screen
             print(color_text("\tMultiple screens detected", COLOR_GREEN))
             second_screen = screens[1]
+            stereo_widget = BigWindow_Stereo()
+            # self.big_window = BigWindow(stereo_widget)
             self.big_window = BigWindow()
             self.big_window.setGeometry(second_screen.geometry())
             self.big_window.showMaximized()
         else:
             # Show the big window on the main screen
             print(color_text("\tSingle screen detected", COLOR_YELLOW))
-            self.big_window = BigWindow()
+            stereo_widget = BigWindow_Stereo()
+            self.big_window = BigWindow(stereo_widget)
             self.big_window.showMaximized()
 
         print("Showing SmallWindow")

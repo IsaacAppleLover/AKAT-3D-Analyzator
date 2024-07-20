@@ -1,50 +1,59 @@
 /* Style for the QMenuBar */
 QMenuBar {
-    background-color: #ff5733; /* Rot */
     color: #ffffff;
+    border: none;
 }
 
 /* Style for the QMenu */
 QMenu {
-    background-color: #33ff57; /* Grün */
-    color: #ffffff;
+    background-color: black;
+    color: transparent;
+    border: 0;
+    border: 1px solid black;
 }
 
 /* Style for the QMenu::item */
 QMenu::item {
-    background-color: #3357ff; /* Blau */
-    color: #ffffff;
+    background-color: #FFFEFC;
+    color: black;
+    margin: 0;
+    padding: 4px;
+    padding-right: 40px;
 }
 
 /* Style for the QMenu::item:selected */
 QMenu::item:selected {
-    background-color: #ff33a8; /* Pink */
-    color: #ffffff;
+    background-color: #D8EEF2;
+    color: black;
 }
 
 /* Style for QAction */
 QAction {
     background-color: #33d6ff; /* Hellblau */
     color: #ffffff;
+    border: 1px solid black;
 }
 
 /* Style for QMenuBar::item */
 QMenuBar::item {
-    background-color: #a833ff; /* Violett */
-    color: #ffffff;
+    color: black;
     cursor: pointer;
+    margin: 4px;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 4px 8px;
 }
 
 /* Style for QMenuBar::item:selected */
 QMenuBar::item:selected {
-    background-color: #ff8c33; /* Orange */
-    color: #ffffff;
+    background-color: #D8EEF2; /* Orange */
+    color: black;
     cursor: pointer;
 }
 
 /* Style for QMenuBar::item:pressed */
 QMenuBar::item:pressed {
-    background-color: #33ff8c; /* Hellgrün */
+    background-color: #729DA6;
     color: #ffffff;
 }
 
