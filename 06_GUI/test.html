@@ -1,114 +1,24 @@
 <!DOCTYPE html>
-<html lang="de">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MenuBar Test</title>
+    <title>Test Page</title>
     <style>
-        /* MenuBar.css */
-        * {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
         body {
-            padding: 0;
-            margin: 0;
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-
-        /* Style for the QMenuBar */
-        .MenuBar {
-            background-color: white;
-            color: white;
-            font-size: 16px;
-            padding: 5px;
-            display: flex;
+        h1 {
+            color: #333;
         }
-
-        /* Style for QMenu items in the QMenuBar */
-        .MenuBar .item {
-            background-color: transparent;
-            padding: 5px 10px;
-            margin: 0px 5px;
-            cursor: pointer;
-            border: 1px solid black;
-            border-radius: 5px;
-            color: black;
-        }
-
-        /* Style for QMenu items when hovered */
-        .MenuBar .item:hover {
-            background-color: blue;
-            color: red;
-            border-radius: 5px;
-        }
-
-        /* Style for QMenu dropdown */
-        .QMenu {
-            background-color: transparent;
-            color: white;
-            display: none;
-            position: absolute;
-            margin-top: 10px;
-        }
-
-        /* Style for QMenu items */
-        .QMenu .item {
-            background-color: transparent;
-            padding: 5px 20px;
-            margin: 0px 2px;
-            display: block;
-        }
-
-        /* Style for QMenu items when hovered */
-        .QMenu .item:hover {
-            background-color: #666;
-            color: white;
-        }
-
-        /* Show dropdown on hover */
-        .MenuBar .item:hover .QMenu {
-            display: block;
+        p {
+            font-size: 18px;
         }
     </style>
 </head>
-
 <body>
-    <div class="MenuBar">
-        <div class="item">
-            Datei
-            <div class="QMenu">
-                <div class="item">Neu</div>
-                <div class="item">Öffnen</div>
-                <div class="item">Speichern</div>
-                <div class="item">Beenden</div>
-            </div>
-        </div>
-        <div class="item">
-            Bearbeiten
-            <div class="QMenu">
-                <div class="item">Rückgängig</div>
-                <div class="item">Wiederholen</div>
-                <div class="item">Ausschneiden</div>
-                <div class="item">Kopieren</div>
-                <div class="item">Einfügen</div>
-            </div>
-        </div>
-        <div class="item">
-            Ansicht
-            <div class="QMenu">
-                <div class="item">Zoom ein</div>
-                <div class="item">Zoom aus</div>
-            </div>
-        </div>
-        <div class="item">
-            Hilfe
-            <div class="QMenu">
-                <div class="item">Über</div>
-                <div class="item">Updates</div>
-            </div>
-        </div>
-    </div>
+    <h1>Test Page</h1>
+    <p>This is a simple test page to verify that the web server and PyQt browser are working correctly.</p>
 </body>
-
 </html>
