@@ -1,10 +1,11 @@
-import sys
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFontDatabase, QFont
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QSizePolicy
+from PyQt5.QtCore import Qt
 from components import Button, CustomWindow, BigWindow, SmallWindow
 from components.BigWindow_Stereo import BigWindow_Stereo
 from components.BigWindow_Browser import BigWindow_Browser
+from components.BigWindow_Red import BigWindow_Red
+import sys
 
 COLOR_BLACK = "\033[30m"
 COLOR_RED = "\033[31m"
@@ -62,7 +63,7 @@ class StartWindow(CustomWindow):
 
     def resizeEvent(self, event):
         # Ensure the label remains square
-        side = int(self.width() * 0.3)  # 80% of the width
+        side = int(self.width() * 0.3)  # 30% of the width
         self.label.setFixedSize(side, side)
         super().resizeEvent(event)
 
@@ -76,20 +77,21 @@ class StartWindow(CustomWindow):
             # Show the big window on the second screen
             print(color_text("\tMultiple screens detected", COLOR_GREEN))
             second_screen = screens[1]
-            mainWidget = BigWindow_Browser()
+            mainWidget = BigWindow_Stereo()  # Default to BigWindow_Stereo
             self.big_window = BigWindow(mainWidget)
             self.big_window.setGeometry(second_screen.geometry())
             self.big_window.showMaximized()
         else:
             # Show the big window on the main screen
             print(color_text("\tSingle screen detected", COLOR_YELLOW))
-            mainWidget = BigWindow_Browser()
+            mainWidget = BigWindow_Stereo()  # Default to BigWindow_Stereo
             self.big_window = BigWindow(mainWidget)
             self.big_window.showMaximized()
 
         print("Showing SmallWindow")
         self.small_window = SmallWindow()
         self.small_window.checkbox_state_changed.connect(self.handle_checkbox_state_changed)
+        self.small_window.radio_button_changed.connect(self.handle_radio_button_changed)
         self.small_window.show()
 
     def handle_checkbox_state_changed(self, not_checked):
@@ -97,6 +99,15 @@ class StartWindow(CustomWindow):
             self.big_window.set_rgb_label_css('background-color: transparent; border: transparent; color: transparent;')
         else:
             self.big_window.set_rgb_label_css('')
+
+    def handle_radio_button_changed(self, text):
+        if text == 'Stereo':
+            mainWidget = BigWindow_Stereo()
+        elif text == 'Red':
+            mainWidget = BigWindow_Red()
+        elif text == 'Browser':
+            mainWidget = BigWindow_Browser()
+        self.big_window.initUI(mainWidget)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

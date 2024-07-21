@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QApplication
 
-class RedWidget(QWidget):
+class BigWindow_Red(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()

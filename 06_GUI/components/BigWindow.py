@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt
 from .CustomWindow import CustomWindow
 from .BigWindow_Stereo import BigWindow_Stereo
-from .BigWindow_Red import RedWidget
-
+from .BigWindow_Red import BigWindow_Red
+from PyQt5.QtWidgets import QLabel
 
 class BigWindow(CustomWindow):
     def __init__(self, content_widget=None):
@@ -16,7 +16,17 @@ class BigWindow(CustomWindow):
             self.centralWidget().deleteLater()
 
         if content_widget is None:
-            content_widget = RedWidget()
+            content_widget = BigWindow_Red()
         self.setCentralWidget(content_widget)
 
+        self.rgb_label = QLabel(self)
+        self.rgb_label.setObjectName("rgbLabel")
+        self.rgb_label.setAlignment(Qt.AlignCenter)
+        self.rgb_label.hide()
+
+        #self.set_rgb_label_css('background-color: transparent; border: transparent; color: transparent;')
+
         self.showFullScreen()
+
+    def set_rgb_label_css(self, css):
+        self.rgb_label.setStyleSheet(css)
