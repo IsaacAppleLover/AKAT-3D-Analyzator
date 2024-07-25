@@ -7,6 +7,7 @@ from .ImageLabel import ImageLabel
 
 class BigWindow_Stereo(QWidget):
     IMAGE_DIR = "../02_Utils/Images/00_3D_Visualization/01_Images/"
+    IMAGE_DIR_ALTERNATIVE = "./02_Utils/Images/00_3D_Visualization/01_Images/"
 
     def __init__(self):
         super().__init__()
@@ -30,7 +31,7 @@ class BigWindow_Stereo(QWidget):
         self.rgb_label.setAlignment(Qt.AlignCenter)
         self.rgb_label.hide()
 
-        self.load_and_display_image(f"{BigWindow_Stereo.IMAGE_DIR}Stereo-Test02.jpg")
+        self.try_load_image("Stereo-Test02.jpg")
 
         self.set_rgb_label_css('background-color: transparent; border: transparent; color: transparent;')
 
@@ -40,15 +41,21 @@ class BigWindow_Stereo(QWidget):
         pixmap = QPixmap(image_path)
 
         if pixmap.isNull():
-            RED_TEXT = "\033[91m"
-            RESET_TEXT = "\033[0m"
-            print(f"{RED_TEXT}Failed to load image from {image_path}{RESET_TEXT}")
-            sys.exit(-1)
+            return False
 
         screen_size = self.screen().size()
         scaled_pixmap = pixmap.scaled(screen_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.depth_map = np.random.rand(scaled_pixmap.height(), scaled_pixmap.width()) * 255
         self.label.setPixmap(scaled_pixmap, self.depth_map)
+        return True
+
+    def try_load_image(self, image_name):
+        if not self.load_and_display_image(f"{BigWindow_Stereo.IMAGE_DIR}{image_name}"):
+            if not self.load_and_display_image(f"{BigWindow_Stereo.IMAGE_DIR_ALTERNATIVE}{image_name}"):
+                RED_TEXT = "\033[91m"
+                RESET_TEXT = "\033[0m"
+                print(f"{RED_TEXT}Failed to load image from both primary and alternative directories{RESET_TEXT}")
+                sys.exit(-1)
 
     def update_rgb_label(self, x, y, r, g, b, depth):
         if x == -1 and y == -1:
