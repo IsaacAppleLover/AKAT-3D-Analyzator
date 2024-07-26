@@ -56,6 +56,10 @@ class SmallWindow(CustomWindow):
         self.radio_group.addButton(browser_radio)
         layout.addWidget(browser_radio)
 
+        live_radio = QRadioButton('Live')
+        self.radio_group.addButton(live_radio)
+        layout.addWidget(live_radio)
+
         self.radio_group.buttonClicked.connect(self.emit_radio_button_state)
 
         container = QWidget()

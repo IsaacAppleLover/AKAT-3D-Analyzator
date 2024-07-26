@@ -5,6 +5,7 @@ from components import Button, CustomWindow, BigWindow, SmallWindow
 from components.BigWindow_Stereo import BigWindow_Stereo
 from components.BigWindow_Browser import BigWindow_Browser
 from components.BigWindow_Red import BigWindow_Red
+from components.BigWindow_Live import BigWindow_Live
 import sys
 
 COLOR_BLACK = "\033[30m"
@@ -107,6 +108,8 @@ class StartWindow(CustomWindow):
             mainWidget = BigWindow_Red()
         elif text == 'Browser':
             mainWidget = BigWindow_Browser()
+        elif text == 'Live':
+            mainWidget = BigWindow_Live()
         self.big_window.initUI(mainWidget)
 
 if __name__ == '__main__':
