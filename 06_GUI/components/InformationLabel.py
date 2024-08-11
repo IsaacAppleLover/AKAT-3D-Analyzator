@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QLabel
-from PyQt5.QtGui import QPalette, QColor
-
+from PyQt5.QtCore import Qt
 
 class InformationLabel(QLabel):
     def __init__(self, value=True, parent=None, true_text="", false_text=""):
@@ -10,7 +9,7 @@ class InformationLabel(QLabel):
         self.false_text = false_text
         self.value = value
 
-        # Set initial text and color based on the value parameter
+        # Set initial text and style based on the value parameter
         self.update_label()
 
     def set_texts(self, true_text=None, false_text=None):
@@ -26,11 +25,10 @@ class InformationLabel(QLabel):
             self.update_label()
 
     def update_label(self):
-        color = QColor('green') if self.value else QColor('red')
-        text = self.true_text if self.value else self.false_text
-
-        palette = self.palette()
-        palette.setColor(QPalette.WindowText, color)
-        self.setPalette(palette)
-
-        self.setText(text)
+        # Set the style based on the value
+        if self.value:
+            self.setStyleSheet("color: green;")
+            self.setText(self.true_text)
+        else:
+            self.setStyleSheet("color: red;")
+            self.setText(self.false_text)

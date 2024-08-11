@@ -7,19 +7,8 @@ from components.BigWindow_Browser import BigWindow_Browser
 from components.BigWindow_Red import BigWindow_Red
 from components.BigWindow_Live import BigWindow_Live
 import sys
-
-COLOR_BLACK = "\033[30m"
-COLOR_RED = "\033[31m"
-COLOR_GREEN = "\033[32m"
-COLOR_YELLOW = "\033[33m"
-COLOR_BLUE = "\033[34m"
-COLOR_MAGENTA = "\033[35m"
-COLOR_CYAN = "\033[36m"
-COLOR_WHITE = "\033[37m"
-COLOR_RESET = "\033[0m"
-
-def color_text(text, color):
-    return f"{color}{text}{COLOR_RESET}"
+import os
+import colors
 
 class StartWindow(CustomWindow):
     def initUI(self):
@@ -73,10 +62,10 @@ class StartWindow(CustomWindow):
         self.hide()
 
         screens = QApplication.screens()
-        print(color_text("Look for Screens...", COLOR_BLUE))
+        print(colors.color_text("Look for Screens...", colors.COLOR_BLUE))
         if len(screens) > 1:
             # Show the big window on the second screen
-            print(color_text("\tMultiple screens detected", COLOR_GREEN))
+            print(colors.color_text("\tMultiple screens detected", colors.COLOR_GREEN))
             second_screen = screens[1]
             mainWidget = BigWindow_Stereo()  # Default to BigWindow_Stereo
             self.big_window = BigWindow(mainWidget)
@@ -84,7 +73,7 @@ class StartWindow(CustomWindow):
             self.big_window.showMaximized()
         else:
             # Show the big window on the main screen
-            print(color_text("\tSingle screen detected", COLOR_YELLOW))
+            print(colors.color_text("\tSingle screen detected", colors.COLOR_YELLOW))
             mainWidget = BigWindow_Stereo()  # Default to BigWindow_Stereo
             self.big_window = BigWindow(mainWidget)
             self.big_window.showMaximized()
@@ -93,13 +82,18 @@ class StartWindow(CustomWindow):
         self.small_window = SmallWindow()
         self.small_window.checkbox_state_changed.connect(self.handle_checkbox_state_changed)
         self.small_window.radio_button_changed.connect(self.handle_radio_button_changed)
+
+        # Verbindung zwischen SmallWindow und BigWindow_Stereo herstellen
+        self.small_window.open_image_signal.connect(self.big_window.centralWidget().open_image_dialog)
+
+
         self.small_window.show()
 
     def handle_checkbox_state_changed(self, not_checked):
         if not_checked:
-            self.big_window.set_rgb_label_css('background-color: transparent; border: transparent; color: transparent;')
+            self.big_window.centralWidget().set_rgb_label_css('background-color: transparent; border: transparent; color: transparent;')
         else:
-            self.big_window.set_rgb_label_css('')
+            self.big_window.centralWidget().set_rgb_label_css('')
 
     def handle_radio_button_changed(self, text):
         if text == 'Stereo':
@@ -110,31 +104,32 @@ class StartWindow(CustomWindow):
             mainWidget = BigWindow_Browser()
         elif text == 'Live':
             mainWidget = BigWindow_Live()
+
         self.big_window.initUI(mainWidget)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    print(color_text("Look for CSS-File...", COLOR_BLUE))
-    # Apply the stylesheet from a CSS file
-    try:
-        with open("styles.css", "r") as file:
+    print(colors.color_text("Look for CSS-File...", colors.COLOR_BLUE))
+    css_path = os.path.join(os.path.dirname(__file__), "styles.css")
+    print(colors.color_text(f"CSS file path: {css_path}", colors.COLOR_WHITE))
+    if os.path.exists(css_path):
+        with open(css_path, "r") as file:
             app.setStyleSheet(file.read())
-            print(color_text("\tCSS file 'styles.css' loaded successfully.", COLOR_GREEN))
-    except FileNotFoundError:
-        print(color_text("\tCSS file 'styles.css' not found.", COLOR_RED))
+    else: 
+        print(colors.color_text(f"\tCSS file '{css_path}' not found.", colors.COLOR_RED))
 
     # List all available fonts
     font_db = QFontDatabase()
     available_fonts = font_db.families()
 
-    print(color_text("Look for Font...", COLOR_BLUE))
+    print(colors.color_text("Look for Font...", colors.COLOR_BLUE))
     # Check if Montserrat is available, otherwise use Arial
     if "Montserrat" in available_fonts:
-        print(color_text("\tMontserrat font is available.", COLOR_GREEN))
+        print(colors.color_text("\tMontserrat font is available.", colors.COLOR_GREEN))
         font = QFont("Montserrat", 8)
     else:
-        print(color_text("\t Montserrat font is not available. Using Arial instead.", COLOR_YELLOW))
+        print(colors.color_text("\t Montserrat font is not available. Using Arial instead.", colors.COLOR_YELLOW))
         font = QFont("Arial", 8)
 
     app.setFont(font)

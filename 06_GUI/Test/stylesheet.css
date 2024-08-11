@@ -1,0 +1,105 @@
+QWidget {
+    background-color: #f3f3f3;
+    color: #212226;
+    font-family: Montserrat;
+}
+
+/* ---------------------------------------------------------------------------------------------------------- */
+
+QMenu {
+    background-color: black;
+    color: transparent;
+    border: 1px solid #666A73;
+    font-size: 10px;
+}
+
+QMenu::item {
+    background-color: #f3f3f3;
+    color: #666A73;
+    margin: 0;
+    padding: 4px;
+    padding-right: 40px;
+}
+
+QMenu::item:selected {
+    background-color: #9FA3A6;
+    color: #222326;
+}
+
+QMenuBar::item {
+    color: #212226;
+    margin: 4px;
+    border: 1px solid #666A73;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 8px;
+}
+
+QMenuBar::item:selected {
+    border: 1px solid #3C3D40;
+    color: black;
+}
+
+QMenuBar::item:pressed {
+    border: 1px solid #3C3D40;
+    background-color: #3C3D40;
+    color: #ffffff;
+}
+
+/* ---------------------------------------------------------------------------------------------------------- */
+
+QPushButton {
+    background-color: transparent;
+    border: 1px solid #666A73;
+    padding: 10px 20px;
+}
+
+QPushButton:hover {
+    border: 1px solid #3C3D40;
+}
+
+QPushButton:pressed {
+    background-color: #3C3D40;
+    border: 1px solid #3C3D40;
+    color: #D7D7D9;
+}
+
+QPushButton[customClass='StartButton'] {
+    width: 40%;
+}
+
+/* ---------------------------------------------------------------------------------------------------------- */
+
+QGroupBox {
+    border: 1px solid #666A73;
+}
+
+/* ---------------------------------------------------------------------------------------------------------- */
+
+QRadioButton:unchecked {
+    color: #666A73;
+}
+
+QRadioButton:checked {
+    color: #222326;
+}
+
+QRadioButton::indicator {
+    width: 7px;
+    height: 7px;
+    border-radius: 4px;
+}
+
+QRadioButton::indicator:checked {
+    border: 1px solid #222326;
+}
+
+QRadioButton::indicator:unchecked {
+    border: 1px solid #666A73;
+}
+
+/* ---------------------------------------------------------------------------------------------------------- */
+
+QLabel[customClass='LOGO'] {
+    background-color: whitesmoke;
+}

@@ -2,12 +2,12 @@ import sys
 import numpy as np
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel, QFileDialog
 from .ImageLabel import ImageLabel
 
 class BigWindow_Stereo(QWidget):
-    IMAGE_DIR = "../02_Utils/Images/00_3D_Visualization/01_Images/"
-    IMAGE_DIR_ALTERNATIVE = "./02_Utils/Images/00_3D_Visualization/01_Images/"
+    IMAGE_DIR = "../02_Utils/Images/"
+    IMAGE_DIR_ALTERNATIVE = "./02_Utils/Images/"
 
     def __init__(self):
         super().__init__()
@@ -31,7 +31,7 @@ class BigWindow_Stereo(QWidget):
         self.rgb_label.setAlignment(Qt.AlignCenter)
         self.rgb_label.hide()
 
-        self.try_load_image("Stereo-Test02.jpg")
+        self.try_load_image("StartGUI.jpg")
 
         self.set_rgb_label_css('background-color: transparent; border: transparent; color: transparent;')
 
@@ -74,3 +74,10 @@ class BigWindow_Stereo(QWidget):
 
     def set_rgb_label_css(self, css):
         self.rgb_label.setStyleSheet(css)
+
+    def open_image_dialog(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Image File", "", "Images (*.png *.jpg *.bmp);;All Files (*)", options=options)
+        if file_name:
+            self.load_and_display_image(file_name)
+

@@ -19,3 +19,7 @@ class CustomWindow(QMainWindow):
 
     def initUI(self):
         pass
+
+    def closeEvent(self, event):
+        """Override the closeEvent to ensure the application quits when the window is closed."""
+        QApplication.quit()

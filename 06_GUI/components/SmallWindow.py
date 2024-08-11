@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QVBoxLayout, QRadioButton, QCheckBox, QWidget, QApplication, QButtonGroup
+from PyQt5.QtWidgets import QVBoxLayout, QRadioButton, QCheckBox, QWidget, QApplication, QButtonGroup, QPushButton
 from PyQt5.QtCore import Qt, pyqtSignal
 from .CustomWindow import CustomWindow
 from .Button import Button
@@ -9,12 +9,14 @@ import sys
 class SmallWindow(CustomWindow):
     checkbox_state_changed = pyqtSignal(bool)
     radio_button_changed = pyqtSignal(str)  # Signal to indicate which radio button is selected
+    open_image_signal = pyqtSignal()  # Signal to trigger the file dialog in BigWindow_Stereo
 
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
         self.setGeometry(300, 300, 400, 200)
         self.center()
 
@@ -38,7 +40,7 @@ class SmallWindow(CustomWindow):
         # Checkbox for label
         checkbox = QCheckBox('Show Label')
         checkbox.stateChanged.connect(self.emit_checkbox_state)
-        layout.addWidget(checkbox)
+        # layout.addWidget(checkbox)
 
         # Radio buttons for switching between BigWindow types
         self.radio_group = QButtonGroup(self)
@@ -50,7 +52,7 @@ class SmallWindow(CustomWindow):
 
         red_radio = QRadioButton('Red')
         self.radio_group.addButton(red_radio)
-        layout.addWidget(red_radio)
+        # layout.addWidget(red_radio)
 
         browser_radio = QRadioButton('Browser')
         self.radio_group.addButton(browser_radio)
@@ -83,9 +85,3 @@ class SmallWindow(CustomWindow):
 
     def emit_radio_button_state(self, button):
         self.radio_button_changed.emit(button.text())  # Emit the text of the selected radio button
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = SmallWindow()
-    window.show()
-    sys.exit(app.exec_())

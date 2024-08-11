@@ -166,8 +166,3 @@ class BigWindow_Live(QWidget):
             self.display.update()
         except ids_peak.Exception:
             pass
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)  # QApplication vor jedem QWidget erstellen
-    ex = BigWindow_Live()
-    sys.exit(app.exec())
