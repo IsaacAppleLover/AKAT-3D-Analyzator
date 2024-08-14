@@ -78,17 +78,12 @@ class BigWindow_Stereo(QWidget):
             self.load_and_display_image(file_name)
 
     def capture(self):
-        # self.current_images['left'] = self.create_random_image("links")
-        # self.current_images['right'] = self.create_random_image("rechts")
-        # combined_image = self.combine_images(self.current_images['left'], self.current_images['right'])
-        # self.current_images['combined'] = combined_image
-        # self.display_image(combined_image)
         cpt.main()
         bilder = cpt.get_created_images()
-
-        for i, bild in enumerate(bilder):
-            print(f"Bild {i+1} anzeigen")
-            bild.show()
+        combined_image = self.combine_images(bilder[0], bilder[0])
+        self.current_images['combined'] = combined_image
+        self.display_image(combined_image)
+        
 
     def create_random_image(self, name):
         image = Image.fromarray(np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8))
