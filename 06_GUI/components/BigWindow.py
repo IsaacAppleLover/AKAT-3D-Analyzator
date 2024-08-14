@@ -10,7 +10,6 @@ class BigWindow(CustomWindow):
     def __init__(self, content_widget=None):
         super().__init__()
         self.initUI(content_widget)
-        self.apply_stylesheet('BigWindow.css')
 
     def initUI(self, content_widget=None):
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -33,11 +32,3 @@ class BigWindow(CustomWindow):
 
     def set_rgb_label_css(self, css):
         self.rgb_label.setStyleSheet(css)
-
-    def apply_stylesheet(self, css):
-        css_file = os.path.join(os.path.dirname(__file__), css)
-        if os.path.exists(css_file):
-            with open(css_file, "r") as file:
-                self.setStyleSheet(file.read())
-        else: 
-            print(colors.color_text(f"\tCSS file '{css}' not found.", colors.COLOR_RED))
