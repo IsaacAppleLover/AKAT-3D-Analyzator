@@ -18,6 +18,7 @@ controllers = []
 threads = []
 data_streams = []
 
+created_images = []
 
 class FinishedCallback(
         ids_peak_afl.FinishedCallback):
@@ -65,6 +66,12 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 		)
 		rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_HighQuality)
 
+		# Konvertiere das Bild in ein PIL.Image-Objekt
+		pil_img = Image.frombytes('RGBA', (rgb_img.Width(), rgb_img.Height()), rgb_img.Buffer().Data())
+
+        # Füge das PIL.Image-Objekt zur globalen Liste hinzu
+		created_images.append(pil_img)
+
 		if LeftItIs == True:
 			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\left_{time.time()}.bmp"
 			print(f"LEFT {time.time()}")
@@ -92,7 +99,9 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 		print(f"Exception in capture_image: {e}")
 
 
-
+def get_created_images():
+    """Gibt die Liste der erstellten Bildobjekte zurück."""
+    return created_images
 
 
 def main():

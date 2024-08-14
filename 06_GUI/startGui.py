@@ -85,7 +85,12 @@ class StartWindow(CustomWindow):
 
         # Verbindung zwischen SmallWindow und BigWindow_Stereo herstellen
         self.small_window.open_image_signal.connect(self.big_window.centralWidget().open_image_dialog)
+        
+        # Verbinde den Capture-Button mit der Capture-Funktion von BigWindow_Stereo
+        self.small_window.capture_button.clicked.connect(self.big_window.centralWidget().capture)
 
+        # Verbinde den Save-Button mit der Save-Funktion von BigWindow_Stereo
+        self.small_window.save_button.clicked.connect(self.big_window.centralWidget().save_images)
 
         self.small_window.show()
 
