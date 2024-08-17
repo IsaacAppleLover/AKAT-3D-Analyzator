@@ -10,6 +10,7 @@ class SmallWindow(CustomWindow):
     checkbox_state_changed = pyqtSignal(bool)
     radio_button_changed = pyqtSignal(str)  # Signal to indicate which radio button is selected
     open_image_signal = pyqtSignal()  # Signal to trigger the file dialog in BigWindow_Stereo
+    capture_signal = pyqtSignal()  # Neues Signal für den Capture-Button
 
     def __init__(self):
         super().__init__()
@@ -24,6 +25,7 @@ class SmallWindow(CustomWindow):
 
         self.capture_button = Button('Capture')
         layout.addWidget(self.capture_button)
+        self.capture_button.clicked.connect(self.emit_capture_signal)
 
         self.save_button = Button('Save')
         layout.addWidget(self.save_button)
@@ -62,6 +64,9 @@ class SmallWindow(CustomWindow):
         # Use the custom MenuBar
         self.menu_bar = MenuBar(self)
         self.setMenuBar(self.menu_bar)
+
+    def emit_capture_signal(self):
+        self.capture_signal.emit()
 
     def emit_checkbox_state(self, state):
         self.checkbox_state_changed.emit(state != Qt.Checked)

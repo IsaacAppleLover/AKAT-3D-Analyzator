@@ -1,10 +1,10 @@
 import sys
 import os
 from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont, ImageQt
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel, QFileDialog
 from .ImageLabel import ImageLabel
 
@@ -42,10 +42,22 @@ class BigWindow_Stereo(QWidget):
         print("Failed to load image from both directories")
         sys.exit(-1)
 
-    def load_and_display_image(self, image_path):
-        pixmap = QPixmap(image_path)
-        if pixmap.isNull():
-            return False
+    def load_and_display_image(self, image_input):
+    # Prüfen, ob der Input ein Pfad (String) oder direkt ein Bild ist
+        if isinstance(image_input, str):
+            pixmap = QPixmap(image_input)
+            if pixmap.isNull():
+                return False
+        elif isinstance(image_input, QPixmap):
+            pixmap = image_input
+        elif isinstance(image_input, np.ndarray):
+            # Konvertiere das NumPy-Array zu einem QImage und dann zu einem QPixmap
+            height, width, channel = image_input.shape
+            bytes_per_line = 3 * width
+            qimage = QImage(image_input.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(qimage)
+        else:
+            raise ValueError("Invalid input type. Expected str, QPixmap, or np.ndarray.")
         
         # Resize pixmap to match the full screen, keeping aspect ratio
         screen_size = self.screen().size()
@@ -72,11 +84,13 @@ class BigWindow_Stereo(QWidget):
             self.load_and_display_image(file_name)
 
     def capture(self):
+        print("capture begin")
         self.current_images['left'] = self.create_random_image("links")
         self.current_images['right'] = self.create_random_image("rechts")
         combined_image = self.combine_images(self.current_images['left'], self.current_images['right'])
         self.current_images['combined'] = combined_image
-        self.display_image(combined_image)
+        self.load_and_display_image(combined_image)
+        print("capture end")
 
     def create_random_image(self, name):
         image = Image.fromarray(np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8))
@@ -85,7 +99,14 @@ class BigWindow_Stereo(QWidget):
             font = ImageFont.truetype("arial.ttf", 20)
         except OSError:
             font = ImageFont.load_default()
-        draw.text(((100 - draw.textsize(name, font=font)[0]) // 2, 40), name, fill="white", font=font)
+
+        # Berechnung der Textgröße mit dem Font-Objekt
+        text_width, text_height = font.getsize(name)
+        
+        # Text zentriert positionieren
+        text_position = ((100 - text_width) // 2, (100 - text_height) // 2)
+        
+        draw.text(text_position, name, fill="white", font=font)
         return image
 
     def combine_images(self, image_left, image_right):
@@ -93,21 +114,6 @@ class BigWindow_Stereo(QWidget):
         combined_image.paste(image_left, (0, 0))
         combined_image.paste(image_right, (image_left.width, 0))
         return combined_image
-
-    def display_image(self, image):
-        # Convert PIL image to QPixmap
-        image_qt = ImageQt.ImageQt(image)
-        pixmap = QPixmap.fromImage(image_qt)
-        
-        # Resize pixmap to match the full screen, keeping aspect ratio
-        screen_size = self.screen().size()
-        pixmap = pixmap.scaled(screen_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        
-        # Creating a depth map for the combined image
-        width, height = pixmap.width(), pixmap.height()
-        depth_map = np.random.rand(height, width) * 255
-        
-        self.image_label.setPixmap(pixmap, depth_map)
 
     def save_images(self):
         if not self.current_images:

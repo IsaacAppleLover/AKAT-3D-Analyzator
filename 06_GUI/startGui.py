@@ -88,9 +88,11 @@ class StartWindow(CustomWindow):
         self.small_window.checkbox_state_changed.connect(self.handle_checkbox_state_changed)
         self.small_window.radio_button_changed.connect(self.handle_radio_button_changed)
 
-        # Verbindung zwischen SmallWindow und BigWindow_Stereo herstellen
+        # Verbindungen zwischen SmallWindow und BigWindow_Stereo herstellen
         self.small_window.open_image_signal.connect(self.big_window.centralWidget().open_image_dialog)
-
+        
+        # Neues Signal für Capture verbinden
+        self.small_window.capture_signal.connect(self.big_window.centralWidget().capture)  
 
         self.small_window.show()
 
