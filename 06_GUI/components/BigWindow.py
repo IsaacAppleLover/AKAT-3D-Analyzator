@@ -1,5 +1,9 @@
 import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import colors
+
 from PyQt5.QtCore import Qt
 from .CustomWindow import CustomWindow
 from .BigWindow_Stereo import BigWindow_Stereo
