@@ -33,7 +33,7 @@ class BigWindow_Stereo(QWidget):
 
         self.image_label.rgb_values_signal.connect(self.update_rgb_label)
 
-        self.try_load_image("StartGUI.jpg")
+        self.try_load_image("StartGUI_2.jpg")
 
     def try_load_image(self, image_name):
         for image_path in (os.path.join(d, image_name) for d in BigWindow_Stereo.IMAGE_DIRS):
@@ -85,32 +85,21 @@ class BigWindow_Stereo(QWidget):
 
     def capture(self):
         print("capture begin")
-        self.current_images['left'] = self.create_random_image("links")
-        self.current_images['right'] = self.create_random_image("rechts")
+        self.current_images['left'] = self.create_colored_image((0, 0, 255))  # Blaues Bild
+        self.current_images['right'] = self.create_colored_image((255, 0, 0))  # Rotes Bild
         combined_image = self.combine_images(self.current_images['left'], self.current_images['right'])
         self.current_images['combined'] = combined_image
+
+        # Konvertiere PIL-Bild in QPixmap
+        qim = ImageQt(combined_image)  # Konvertiere PIL-Bild in QImage
+        pixmap = QPixmap.fromImage(qim)  # Konvertiere QImage in QPixmap
         
-        # Konvertiere das PIL-Bild in QPixmap, um es in der GUI anzuzeigen
-        combined_qpixmap = QPixmap.fromImage(ImageQt.ImageQt(combined_image))
-        
-        self.load_and_display_image(combined_qpixmap)
+        self.load_and_display_image(pixmap)
         print("capture end")
 
-    def create_random_image(self, name):
-        image = Image.fromarray(np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8))
-        draw = ImageDraw.Draw(image)
-        try:
-            font = ImageFont.truetype("arial.ttf", 20)
-        except OSError:
-            font = ImageFont.load_default()
-
-        # Berechnung der Textgröße mit dem Font-Objekt
-        text_width, text_height = font.getsize(name)
-        
-        # Text zentriert positionieren
-        text_position = ((100 - text_width) // 2, (100 - text_height) // 2)
-        
-        draw.text(text_position, name, fill="white", font=font)
+    def create_colored_image(self, color):
+        # Erstelle ein Bild mit der angegebenen Farbe
+        image = Image.new("RGB", (100, 100), color)
         return image
 
     def combine_images(self, image_left, image_right):
