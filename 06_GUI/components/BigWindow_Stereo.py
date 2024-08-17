@@ -1,7 +1,7 @@
 import sys
 import os
 from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageQt
 import numpy as np
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap
@@ -43,7 +43,7 @@ class BigWindow_Stereo(QWidget):
         sys.exit(-1)
 
     def load_and_display_image(self, image_input):
-    # Prüfen, ob der Input ein Pfad (String) oder direkt ein Bild ist
+        # Prüfen, ob der Input ein Pfad (String) oder direkt ein Bild ist
         if isinstance(image_input, str):
             pixmap = QPixmap(image_input)
             if pixmap.isNull():
@@ -89,7 +89,11 @@ class BigWindow_Stereo(QWidget):
         self.current_images['right'] = self.create_random_image("rechts")
         combined_image = self.combine_images(self.current_images['left'], self.current_images['right'])
         self.current_images['combined'] = combined_image
-        self.load_and_display_image(combined_image)
+        
+        # Konvertiere das PIL-Bild in QPixmap, um es in der GUI anzuzeigen
+        combined_qpixmap = QPixmap.fromImage(ImageQt.ImageQt(combined_image))
+        
+        self.load_and_display_image(combined_qpixmap)
         print("capture end")
 
     def create_random_image(self, name):
