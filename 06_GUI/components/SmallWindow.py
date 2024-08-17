@@ -11,6 +11,7 @@ class SmallWindow(CustomWindow):
     radio_button_changed = pyqtSignal(str)  # Signal to indicate which radio button is selected
     open_image_signal = pyqtSignal()  # Signal to trigger the file dialog in BigWindow_Stereo
     capture_signal = pyqtSignal()  # Neues Signal für den Capture-Button
+    delete_signal = pyqtSignal()  # Neues Signal für den Delete-Button
 
     def __init__(self):
         super().__init__()
@@ -27,8 +28,9 @@ class SmallWindow(CustomWindow):
         layout.addWidget(self.capture_button)
         self.capture_button.clicked.connect(self.emit_capture_signal)
 
-        self.save_button = Button('Save')
-        layout.addWidget(self.save_button)
+        self.delete_button = Button('Delete')
+        layout.addWidget(self.delete_button)
+        self.delete_button.clicked.connect(self.emit_delete_signal)
 
         # Checkbox for label
         checkbox = QCheckBox('Show Label')
@@ -67,6 +69,9 @@ class SmallWindow(CustomWindow):
 
     def emit_capture_signal(self):
         self.capture_signal.emit()
+
+    def emit_delete_signal(self):
+        self.delete_signal.emit()
 
     def emit_checkbox_state(self, state):
         self.checkbox_state_changed.emit(state != Qt.Checked)

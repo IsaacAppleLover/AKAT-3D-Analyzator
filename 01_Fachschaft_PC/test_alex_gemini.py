@@ -1,11 +1,16 @@
 import threading
+import os
 import time
+from datetime import datetime
 from ids_peak import ids_peak, ids_peak_ipl_extension
 from ids_peak_ipl import ids_peak_ipl
 from ids_peak_afl import ids_peak_afl
 from PIL import Image, ImageEnhance
 import numpy as np
 import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import colors
 
 m_device = None
 m_dataStream = None
@@ -18,7 +23,6 @@ controllers = []
 threads = []
 data_streams = []
 
-current_images = {}
 
 class FinishedCallback(
         ids_peak_afl.FinishedCallback):
@@ -50,7 +54,7 @@ def increase_brightness(image, factor=2.0):
 def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 	try:
 		barrier.wait()
-		print("Starting acquisition...")
+		print(colors.color_text(f"\tStarting acquisition...", colors.COLOR_YELLOW))
 		m_data_stream.StartAcquisition()
 		remote_nodemap.FindNode("AcquisitionStart").Execute()
 		remote_nodemap.FindNode("AcquisitionStart").WaitUntilDone()
@@ -66,18 +70,18 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 		)
 		rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_HighQuality)
 
-		pil_img = Image.frombytes('RGB', (rgb_img.Width(), rgb_img.Height()), rgb_img.Buffer().Data())
+		current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+		relative_folder_path = os.path.join("02_Utils", "Images", "04_capturedImages", current_time)
+		os.makedirs(relative_folder_path, exist_ok=True)
 
-		if LeftItIs == True:
-			
-
-			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\left_{time.time()}.bmp"
-			print(f"LEFT {time.time()}")
+		# Entscheidung, ob es sich um ein linkes oder rechtes Bild handelt
+		if LeftItIs:
+			image_path = os.path.join(relative_folder_path, f"left.bmp")
+			print(colors.color_text(f"\tLeft Image Saved", colors.COLOR_YELLOW))
 		else:
-			
-
-			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\right_{time.time()}.bmp"
-			print(f"RIGHT {time.time()}")
+			image_path = os.path.join(relative_folder_path, f"right.bmp")
+			print(colors.color_text(f"\tRight Image Saved", colors.COLOR_YELLOW))
+		
 		ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
 
 		# Open image with PIL
@@ -96,17 +100,7 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 		m_data_stream.QueueBuffer(buffer)
         
 	except Exception as e:
-		print(f"Exception in capture_image: {e}")
-
-def create_random_image(name):
-		image = Image.fromarray(np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8))
-		return image
-
-def get_created_images():
-    """Erstellt zwei Zufallsbilder und gibt sie in einer Liste zurück."""
-    current_images['left'] = create_random_image("links")
-    current_images['right'] = create_random_image("rechts")
-    return current_images
+		print(colors.color_text(f"Exception in capture_image: {e}", colors.COLOR_RED))
 
 
 
@@ -120,7 +114,7 @@ def main():
 
 		
 		for i in range(2):
-			print(f"Startting Camera Number: {i}")
+			print(colors.color_text(f"\tStarting Camera Number: {i}", colors.COLOR_YELLOW))
 			# Create a DeviceManager object
 			device_manager = ids_peak.DeviceManager.Instance()
 			# Update the DeviceManager
@@ -128,11 +122,11 @@ def main():
 
 			# Exit program if no device was found
 			if device_manager.Devices().empty():
-							print("No device found. Exiting Program.")
+							print(colors.color_text(f"\tNo device found. Exiting Program.", colors.COLOR_RED))
 							return -1
 			# Open the first device
 			device = device_manager.Devices()[i].OpenDevice(ids_peak.DeviceAccessType_Control)
-			print(f"Device: {device.SerialNumber()} -> {device.DisplayName()}")
+			print(colors.color_text(f"\tDevice: {device.SerialNumber()} -> {device.DisplayName()}", colors.COLOR_YELLOW))
 			# Nodemap for accessing GenICam nodes
 			remote_nodemap = device.RemoteDevice().NodeMaps()[0]
 
@@ -142,8 +136,8 @@ def main():
 			controller = manager.CreateController(
 							ids_peak_afl.PEAK_AFL_CONTROLLER_TYPE_BRIGHTNESS)
 
-			print(f"Controller Status: {controller.Status()}")
-			print(f"Controller Type: {controller.Type()}")
+			print(colors.color_text(f"\tController Status: {controller.Status()}", colors.COLOR_YELLOW))
+			print(colors.color_text(f"\tController Type: {controller.Type()}", colors.COLOR_YELLOW))
 
 			# Get frame rate range. All values in fps.
 			min_frame_rate = remote_nodemap.FindNode("AcquisitionFrameRate").Minimum()
@@ -174,7 +168,7 @@ def main():
 			remote_nodemap.FindNode("UserSetLoad").Execute()
 			remote_nodemap.FindNode("UserSetLoad").WaitUntilDone()
 
-			# Auto brightness mode is split up in two grtgr
+			# Auto brightness mode is split up in two components
 			# so you can't use the regular controller.SetMode etc.
 			# NOTE: mode is reset to off automatically after the operation finishes
 			# when using PEAK_AFL_CONTROLLER_AUTOMODE_ONCE
@@ -221,7 +215,7 @@ def main():
 			LeftItIs = False
 			if i == 0:
 				LeftItIs = True
-			print("Starting Thread!")
+			print(colors.color_text(f"\tStarting Thread!", colors.COLOR_YELLOW))
 			thread = threading.Thread(target=capture_image, args=(remote_nodemap, barrier, m_data_stream, controller, LeftItIs))
 			threads.append(thread)
 			thread.start()
@@ -235,7 +229,7 @@ def main():
 			buffer = buffers[i]
 			controller = controllers[i]
    
-			print("Stopping acquisition...")
+			print(colors.color_text(f"\tStopping acquisition...", colors.COLOR_YELLOW))
 			remote_nodemap.FindNode("AcquisitionStop").Execute()
 			remote_nodemap.FindNode("AcquisitionStop").WaitUntilDone()
 			# Remove buffers from any associated queue
@@ -252,7 +246,7 @@ def main():
 			print(f"LastAutoAverage: {controller.GetLastAutoAverage()}")
 			
 	except Exception as e:
-			print(f"EXCEPTION: {e}")
+			print(colors.color_text(f"\tEXCEPTION: {e}", colors.COLOR_RED))
 			return -2
 
 	finally:

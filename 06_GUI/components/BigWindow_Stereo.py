@@ -1,12 +1,30 @@
+import importlib.util
 import sys
 import os
+import glob
+import shutil  # Neu hinzugefügt, um Verzeichnisse zu löschen
+import tempfile
 from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont, ImageQt
+from PIL import Image, ImageDraw, ImageFont
+from PIL.ImageQt import ImageQt
 import numpy as np
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel, QFileDialog
-from .ImageLabel import ImageLabel
+from .ImageLabel import ImageLabel  # Import korrigiert
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+import colors
+
+def import_module_from_path(module_name, module_path):
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+gemini_module = import_module_from_path("test_alex_gemini", os.path.join("01_Fachschaft_PC", "test_alex_gemini.py"))
+gemini_main = gemini_module.main
 
 class BigWindow_Stereo(QWidget):
     IMAGE_DIRS = ["../02_Utils/Images/", "./02_Utils/Images/"]
@@ -43,7 +61,6 @@ class BigWindow_Stereo(QWidget):
         sys.exit(-1)
 
     def load_and_display_image(self, image_input):
-        # Prüfen, ob der Input ein Pfad (String) oder direkt ein Bild ist
         if isinstance(image_input, str):
             pixmap = QPixmap(image_input)
             if pixmap.isNull():
@@ -84,34 +101,35 @@ class BigWindow_Stereo(QWidget):
             self.load_and_display_image(file_name)
 
     def capture(self):
-        print("capture begin")
-        self.current_images['left'] = self.create_random_image("links")
-        self.current_images['right'] = self.create_random_image("rechts")
-        combined_image = self.combine_images(self.current_images['left'], self.current_images['right'])
-        self.current_images['combined'] = combined_image
-        
-        # Konvertiere das PIL-Bild in QPixmap, um es in der GUI anzuzeigen
-        combined_qpixmap = QPixmap.fromImage(ImageQt.ImageQt(combined_image))
-        
-        self.load_and_display_image(combined_qpixmap)
-        print("capture end")
+        print(colors.color_text("Start Capture...", colors.COLOR_GREEN))
+        gemini_main()
+        print(colors.color_text("\tCapture successful...", colors.COLOR_GREEN))
 
-    def create_random_image(self, name):
-        image = Image.fromarray(np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8))
-        draw = ImageDraw.Draw(image)
-        try:
-            font = ImageFont.truetype("arial.ttf", 20)
-        except OSError:
-            font = ImageFont.load_default()
-
-        # Berechnung der Textgröße mit dem Font-Objekt
-        text_width, text_height = font.getsize(name)
+        # Pfad zum Verzeichnis, in dem die Bilder gespeichert werden
+        base_dir = r'02_Utils\Images\04_capturedImages'
         
-        # Text zentriert positionieren
-        text_position = ((100 - text_width) // 2, (100 - text_height) // 2)
+        # Den neuesten Ordner im Verzeichnis finden
+        list_of_dirs = glob.glob(os.path.join(base_dir, '*'))
+        latest_dir = max(list_of_dirs, key=os.path.getmtime)
         
-        draw.text(text_position, name, fill="white", font=font)
-        return image
+        # Pfad zu den Bildern "links" und "rechts"
+        left_image_path = os.path.join(latest_dir, 'left.bmp')
+        right_image_path = os.path.join(latest_dir, 'right.bmp')
+        
+        # Bilder laden und kombinieren
+        left_image = Image.open(left_image_path)
+        right_image = Image.open(right_image_path)
+        combined_image = self.combine_images(left_image, right_image)
+        
+        # Kombiniertes Bild speichern
+        combined_image_path = os.path.join(latest_dir, 'combined.bmp')
+        combined_image.save(combined_image_path)
+        
+        # Kombiniertes Bild als QPixmap laden
+        pixmap = QPixmap(combined_image_path)
+        
+        # Pixmap laden und anzeigen
+        self.load_and_display_image(pixmap)
 
     def combine_images(self, image_left, image_right):
         combined_image = Image.new("RGB", (image_left.width + image_right.width, max(image_left.height, image_right.height)))
@@ -119,16 +137,21 @@ class BigWindow_Stereo(QWidget):
         combined_image.paste(image_right, (image_left.width, 0))
         return combined_image
 
-    def save_images(self):
-        if not self.current_images:
-            print("No images to save.")
+    def delete(self):
+        base_dir = r'02_Utils\Images\04_capturedImages'
+        
+        # Den neuesten Ordner im Verzeichnis finden
+        list_of_dirs = glob.glob(os.path.join(base_dir, '*'))
+        if not list_of_dirs:
+            print(colors.color_text(f"\tNo directories found to delete.", colors.COLOR_RED))
             return
+        
+        latest_dir = max(list_of_dirs, key=os.path.getmtime)
+        
+        # Verzeichnis löschen
+        shutil.rmtree(latest_dir)
+        print(colors.color_text(f"\tImage successfully deleted.", colors.COLOR_GREEN))
+        
+        # StartGUI.jpg wieder anzeigen
+        self.try_load_image("StartGUI.jpg")
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        directory = os.path.join("02_Utils", "Images", "captured", timestamp)
-        os.makedirs(directory, exist_ok=True)
-
-        for name, image in self.current_images.items():
-            image_path = os.path.join(directory, f"{name}.png")
-            image.save(image_path)
-            print(f"Saved {name} image to {image_path}")

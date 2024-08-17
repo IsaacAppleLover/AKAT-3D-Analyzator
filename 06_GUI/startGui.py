@@ -1,3 +1,12 @@
+import sys
+import os
+base_dir = os.path.dirname(os.path.abspath(__file__))
+target_dir = os.path.join(base_dir, '..', '01_Fachschaft_PC', 'live_image', 'simple_live_qtwidgets')
+sys.path.append(target_dir)
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import colors
+
 from PyQt5.QtGui import QFontDatabase, QFont
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QSizePolicy, QMessageBox
 from PyQt5.QtCore import Qt
@@ -5,15 +14,6 @@ from components import Button, CustomWindow, BigWindow, SmallWindow
 from components.BigWindow_Stereo import BigWindow_Stereo
 from components.BigWindow_Browser import BigWindow_Browser
 from components.BigWindow_Red import BigWindow_Red
-
-import sys
-import os
-base_dir = os.path.dirname(os.path.abspath(__file__))
-target_dir = os.path.join(base_dir, '..', '01_Fachschaft_PC', 'live_image', 'simple_live_qtwidgets')
-sys.path.append(target_dir)
-from mainwindow import MainWindow
-
-import colors
 
 class StartWindow(CustomWindow):
     def initUI(self):
@@ -83,7 +83,6 @@ class StartWindow(CustomWindow):
             self.big_window = BigWindow(mainWidget)
             self.big_window.showMaximized()
 
-        print("Showing SmallWindow")
         self.small_window = SmallWindow()
         self.small_window.checkbox_state_changed.connect(self.handle_checkbox_state_changed)
         self.small_window.radio_button_changed.connect(self.handle_radio_button_changed)
@@ -92,7 +91,10 @@ class StartWindow(CustomWindow):
         self.small_window.open_image_signal.connect(self.big_window.centralWidget().open_image_dialog)
         
         # Neues Signal für Capture verbinden
-        self.small_window.capture_signal.connect(self.big_window.centralWidget().capture)  
+        self.small_window.capture_signal.connect(self.big_window.centralWidget().capture)
+
+        # Neues Signal für Capture verbinden
+        self.small_window.delete_signal.connect(self.big_window.centralWidget().delete)
 
         self.small_window.show()
 
