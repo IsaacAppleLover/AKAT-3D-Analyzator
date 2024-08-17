@@ -1,13 +1,18 @@
 from PyQt5.QtGui import QFontDatabase, QFont
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QSizePolicy, QMessageBox
 from PyQt5.QtCore import Qt
 from components import Button, CustomWindow, BigWindow, SmallWindow
 from components.BigWindow_Stereo import BigWindow_Stereo
 from components.BigWindow_Browser import BigWindow_Browser
 from components.BigWindow_Red import BigWindow_Red
-from components.BigWindow_Live import BigWindow_Live
+
 import sys
 import os
+base_dir = os.path.dirname(os.path.abspath(__file__))
+target_dir = os.path.join(base_dir, '..', '01_Fachschaft_PC', 'live_image', 'simple_live_qtwidgets')
+sys.path.append(target_dir)
+from mainwindow import MainWindow
+
 import colors
 
 class StartWindow(CustomWindow):
@@ -85,12 +90,7 @@ class StartWindow(CustomWindow):
 
         # Verbindung zwischen SmallWindow und BigWindow_Stereo herstellen
         self.small_window.open_image_signal.connect(self.big_window.centralWidget().open_image_dialog)
-        
-        # Verbinde den Capture-Button mit der Capture-Funktion von BigWindow_Stereo
-        self.small_window.capture_button.clicked.connect(self.big_window.centralWidget().capture)
 
-        # Verbinde den Save-Button mit der Save-Funktion von BigWindow_Stereo
-        self.small_window.save_button.clicked.connect(self.big_window.centralWidget().save_images)
 
         self.small_window.show()
 
@@ -108,7 +108,9 @@ class StartWindow(CustomWindow):
         elif text == 'Browser':
             mainWidget = BigWindow_Browser()
         elif text == 'Live':
-            mainWidget = BigWindow_Live()
+            # Zeige eine Fehlermeldung an
+            QMessageBox.critical(self, "Fehler", "Der 'Live'-Modus ist derzeit nicht verfügbar.", QMessageBox.Ok)
+            return  # Brich die Methode ab, um keine weiteren Aktionen durchzuführen
 
         self.big_window.initUI(mainWidget)
 

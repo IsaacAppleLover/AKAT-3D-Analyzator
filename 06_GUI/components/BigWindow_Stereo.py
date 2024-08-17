@@ -8,12 +8,6 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel, QFileDialog
 from .ImageLabel import ImageLabel
 
-# Füge das Verzeichnis zum Suchpfad hinzu
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '01_Fachschaft_PC'))
-
-# Importiere die Funktion
-import test_alex_gemini as cpt
-
 class BigWindow_Stereo(QWidget):
     IMAGE_DIRS = ["../02_Utils/Images/", "./02_Utils/Images/"]
 
@@ -78,12 +72,11 @@ class BigWindow_Stereo(QWidget):
             self.load_and_display_image(file_name)
 
     def capture(self):
-        cpt.main()
-        bilder = cpt.get_created_images()
-        combined_image = self.combine_images(bilder[0], bilder[0])
+        self.current_images['left'] = self.create_random_image("links")
+        self.current_images['right'] = self.create_random_image("rechts")
+        combined_image = self.combine_images(self.current_images['left'], self.current_images['right'])
         self.current_images['combined'] = combined_image
         self.display_image(combined_image)
-        
 
     def create_random_image(self, name):
         image = Image.fromarray(np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8))
