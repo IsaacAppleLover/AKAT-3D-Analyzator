@@ -18,7 +18,7 @@ controllers = []
 threads = []
 data_streams = []
 
-created_images = []
+current_images = {}
 
 class FinishedCallback(
         ids_peak_afl.FinishedCallback):
@@ -66,16 +66,16 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 		)
 		rgb_img = image.ConvertTo(ids_peak_ipl.PixelFormatName_BGRa8, ids_peak_ipl.ConversionMode_HighQuality)
 
-		# Konvertiere das Bild in ein PIL.Image-Objekt
-		pil_img = Image.frombytes('RGBA', (rgb_img.Width(), rgb_img.Height()), rgb_img.Buffer().Data())
-
-        # Füge das PIL.Image-Objekt zur globalen Liste hinzu
-		created_images.append(pil_img)
+		pil_img = Image.frombytes('RGB', (rgb_img.Width(), rgb_img.Height()), rgb_img.Buffer().Data())
 
 		if LeftItIs == True:
+			
+
 			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\left_{time.time()}.bmp"
 			print(f"LEFT {time.time()}")
 		else:
+			
+
 			image_path = f"C:\\Users\\Administrator\\Desktop\\KAT\\Output\\new\\right_{time.time()}.bmp"
 			print(f"RIGHT {time.time()}")
 		ids_peak_ipl.ImageWriter.Write(image_path, rgb_img)
@@ -98,10 +98,16 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 	except Exception as e:
 		print(f"Exception in capture_image: {e}")
 
+def create_random_image(name):
+		image = Image.fromarray(np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8))
+		return image
 
 def get_created_images():
-    """Gibt die Liste der erstellten Bildobjekte zurück."""
-    return created_images
+    """Erstellt zwei Zufallsbilder und gibt sie in einer Liste zurück."""
+    current_images['left'] = create_random_image("links")
+    current_images['right'] = create_random_image("rechts")
+    return current_images
+
 
 
 def main():
