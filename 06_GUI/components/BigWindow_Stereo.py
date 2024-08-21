@@ -101,7 +101,7 @@ class BigWindow_Stereo(QWidget):
             self.load_and_display_image(file_name)
 
     def capture(self):
-        print(colors.color_text("Start Capture...", colors.COLOR_GREEN))
+        print(colors.color_text("Start Capture...", colors.COLOR_BLUE))
         gemini_main()
         print(colors.color_text("\tCapture successful...", colors.COLOR_GREEN))
 
@@ -143,14 +143,12 @@ class BigWindow_Stereo(QWidget):
         # Den neuesten Ordner im Verzeichnis finden
         list_of_dirs = glob.glob(os.path.join(base_dir, '*'))
         if not list_of_dirs:
-            print(colors.color_text(f"\tNo directories found to delete.", colors.COLOR_RED))
             return
         
         latest_dir = max(list_of_dirs, key=os.path.getmtime)
         
         # Verzeichnis löschen
         shutil.rmtree(latest_dir)
-        print(colors.color_text(f"\tImage successfully deleted.", colors.COLOR_GREEN))
         
         # StartGUI.jpg wieder anzeigen
         self.try_load_image("StartGUI.jpg")
