@@ -12,6 +12,17 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import colors
 
+
+#Laser controller
+import serial
+ser = serial.Serial('COM3', 9600)
+#1ser.open()
+ser.flushInput()
+laserOn = 1;
+laserOn += "\n"
+laserOff = 0;
+laserOff += "\n"
+
 m_device = None
 m_dataStream = None
 m_node_map_remote_device = None
@@ -218,11 +229,21 @@ def main():
 			print(colors.color_text(f"\tStarting Thread!", colors.COLOR_YELLOW))
 			thread = threading.Thread(target=capture_image, args=(remote_nodemap, barrier, m_data_stream, controller, LeftItIs))
 			threads.append(thread)
+
+			# Turn laser on
+			if i==1 :
+				ser.write(laserOn.encode())
+
 			thread.start()
 		# Wait for all threads to finish
+
+
 		for thread in threads:
 			thread.join()
-   
+
+		# Turn laser off
+		ser.write(laserOff.encode())
+
 		for i in range(2):
 			remote_nodemap = nodemaps[i]
 			m_data_stream = data_streams[i]
