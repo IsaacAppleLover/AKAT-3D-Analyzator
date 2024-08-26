@@ -17,8 +17,8 @@ imgpoints_left = []  # 2D points in image plane for left camera
 imgpoints_right = []  # 2D points in image plane for right camera
 
 # Load all image pairs
-images_left = glob.glob('path_to_calibration_images_left/*.jpg')
-images_right = glob.glob('path_to_calibration_images_right/*.jpg')
+images_left = glob.glob('02_Utils/Images/02_Chessboard/01_links/*.png')
+images_right = glob.glob('02_Utils/Images/02_Chessboard/01_rechts/*.png')
 
 # Make sure the number of images match
 assert len(images_left) == len(images_right), "The number of left and right images must be the same"
