@@ -23,8 +23,8 @@ def import_module_from_path(module_name, module_path):
     spec.loader.exec_module(module)
     return module
 
-#gemini_module = import_module_from_path("test_alex_gemini", os.path.join("01_Fachschaft_PC", "test_alex_gemini.py"))
-#gemini_main = gemini_module.main
+gemini_module = import_module_from_path("test_alex_gemini", os.path.join("01_Fachschaft_PC", "test_alex_gemini.py"))
+gemini_main = gemini_module.main
 
 class BigWindow_Stereo(QWidget):
     IMAGE_DIRS = ["../02_Utils/Images/", "./02_Utils/Images/"]
