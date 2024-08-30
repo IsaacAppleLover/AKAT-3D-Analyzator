@@ -7,7 +7,6 @@ import colors
 from PyQt5.QtCore import Qt
 from .CustomWindow import CustomWindow
 from .BigWindow_Stereo import BigWindow_Stereo
-from .BigWindow_Red import BigWindow_Red
 from PyQt5.QtWidgets import QLabel
 
 class BigWindow(CustomWindow):
@@ -22,7 +21,7 @@ class BigWindow(CustomWindow):
             self.centralWidget().deleteLater()
 
         if content_widget is None:
-            content_widget = BigWindow_Red()
+            content_widget = BigWindow_Stereo()
         self.setCentralWidget(content_widget)
 
         self.rgb_label = QLabel(self)

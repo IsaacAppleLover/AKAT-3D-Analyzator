@@ -13,7 +13,6 @@ from PyQt5.QtCore import Qt
 from components import Button, CustomWindow, BigWindow, SmallWindow
 from components.BigWindow_Stereo import BigWindow_Stereo
 from components.BigWindow_Browser import BigWindow_Browser
-from components.BigWindow_Red import BigWindow_Red
 
 class StartWindow(CustomWindow):
     def initUI(self):
@@ -107,8 +106,6 @@ class StartWindow(CustomWindow):
     def handle_radio_button_changed(self, text):
         if text == 'Stereo':
             mainWidget = BigWindow_Stereo()
-        elif text == 'Red':
-            mainWidget = BigWindow_Red()
         elif text == 'Browser':
             mainWidget = BigWindow_Browser()
         elif text == 'Live':

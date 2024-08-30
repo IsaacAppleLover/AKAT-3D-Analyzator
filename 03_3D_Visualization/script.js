@@ -28,14 +28,14 @@ const imageName = "Chameleon";
 const imageExtension = ".jpg";
 
 textureLoader.load(
-    `../02_Utils/Images/00_3D_Visualization/01_Images/${imageName}${imageExtension}`,
+    `../02_Utils/Images/3D_Visualization/01_Images/${imageName}${imageExtension}`,
     function (texture) {
         originalImage = texture;
         init();
     }
 );
 textureLoader.load(
-    `../02_Utils/Images/00_3D_Visualization/02_Depth_Map/${imageName}_DepthMap${imageExtension}`,
+    `../02_Utils/Images/3D_Visualization/02_Depth_Map/${imageName}_DepthMap${imageExtension}`,
     function (texture) {
         depthMap = texture;
         init();

@@ -23,8 +23,8 @@ def import_module_from_path(module_name, module_path):
     spec.loader.exec_module(module)
     return module
 
-gemini_module = import_module_from_path("test_alex_gemini", os.path.join("01_Fachschaft_PC", "test_alex_gemini.py"))
-gemini_main = gemini_module.main
+#gemini_module = import_module_from_path("capture_left_right_image", os.path.join("01_Fachschaft_PC", "capture_left_right_image.py"))
+#gemini_main = gemini_module.main
 
 class BigWindow_Stereo(QWidget):
     IMAGE_DIRS = ["../02_Utils/Images/", "./02_Utils/Images/"]
@@ -106,7 +106,7 @@ class BigWindow_Stereo(QWidget):
         print(colors.color_text("\tCapture successful...", colors.COLOR_GREEN))
 
         # Pfad zum Verzeichnis, in dem die Bilder gespeichert werden
-        base_dir = r'02_Utils\Images\04_capturedImages'
+        base_dir = r'02_Utils\Images\capturedImages'
         
         # Den neuesten Ordner im Verzeichnis finden
         list_of_dirs = glob.glob(os.path.join(base_dir, '*'))
@@ -138,7 +138,7 @@ class BigWindow_Stereo(QWidget):
         return combined_image
 
     def delete(self):
-        base_dir = r'02_Utils\Images\04_capturedImages'
+        base_dir = r'02_Utils\Images\capturedImages'
         
         # Den neuesten Ordner im Verzeichnis finden
         list_of_dirs = glob.glob(os.path.join(base_dir, '*'))
