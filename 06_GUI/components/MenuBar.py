@@ -23,16 +23,6 @@ class MenuBar(QMenuBar):
         file_menu.addAction(open_action)
         file_menu.addAction(exit_action)
 
-        # Create Edit menu
-        edit_menu = QMenu("Edit", self)
-        self.addMenu(edit_menu)
-
-        # Add actions to Edit menu
-        undo_action = QAction("Undo", self)
-        redo_action = QAction("Redo", self)
-        edit_menu.addAction(undo_action)
-        edit_menu.addAction(redo_action)
-
         # Create About menu
         about_menu = QMenu("About", self)
         self.addMenu(about_menu)
