@@ -8,20 +8,22 @@ from ids_peak_afl import ids_peak_afl
 from PIL import Image, ImageEnhance
 import numpy as np
 import sys
-
+import serial
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import colors
 
 
-#Laser controller
-import serial
-ser = serial.Serial('COM3', 9600)
-#1ser.open()
-ser.flushInput()
-laserOn = "1"
-laserOn += "\n"
-laserOff = "0"
-laserOff += "\n"
+# Laser controller
+try:
+    ser = serial.Serial('COM3', 9600)
+    ser.flushInput()
+    laserOn = "1\n"
+    laserOff = "0\n"
+    serial_connected = True
+except serial.SerialException:
+    ser = None
+    serial_connected = False
+    print(colors.color_text("Serial port not connected. Running without laser control.", colors.COLOR_RED))
 
 m_device = None
 m_dataStream = None
@@ -66,6 +68,7 @@ def capture_image(remote_nodemap, barrier, m_data_stream, controller, LeftItIs):
 	try:
 		barrier.wait()
 		print(colors.color_text(f"\tStarting acquisition...", colors.COLOR_YELLOW))
+        # Start image acquisition
 		m_data_stream.StartAcquisition()
 		remote_nodemap.FindNode("AcquisitionStart").Execute()
 		remote_nodemap.FindNode("AcquisitionStart").WaitUntilDone()
@@ -123,7 +126,6 @@ def main():
 
 	try:
 
-		
 		for i in range(2):
 			print(colors.color_text(f"\tStarting Camera Number: {i}", colors.COLOR_YELLOW))
 			# Create a DeviceManager object
@@ -230,8 +232,8 @@ def main():
 			thread = threading.Thread(target=capture_image, args=(remote_nodemap, barrier, m_data_stream, controller, LeftItIs))
 			threads.append(thread)
 
-			# Turn laser on
-			if i==1 :
+			# Turn laser on if serial is connected
+			if i == 1 and serial_connected:
 				ser.write(laserOn.encode())
 
 			thread.start()
@@ -241,8 +243,9 @@ def main():
 		for thread in threads:
 			thread.join()
 
-		# Turn laser off
-		ser.write(laserOff.encode())
+		# Turn laser off if serial is connected
+		if serial_connected:
+			ser.write(laserOff.encode())
 
 		for i in range(2):
 			remote_nodemap = nodemaps[i]
