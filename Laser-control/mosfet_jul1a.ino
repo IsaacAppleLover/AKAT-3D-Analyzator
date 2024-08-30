@@ -10,8 +10,6 @@ void loop() {
     char c = Serial.read();
     if (c == '1') {
       digitalWrite(mosfetGatePin, HIGH);
-      delay(1000);
-      digitalWrite(mosfetGatePin, LOW);
     } else if (c == '0') {
       digitalWrite(mosfetGatePin, LOW);
     }
