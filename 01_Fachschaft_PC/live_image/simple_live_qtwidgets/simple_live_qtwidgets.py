@@ -10,11 +10,11 @@ from mainwindow import MainWindow
 
 def main():
     a = QApplication(sys.argv)
-    w = MainWindow()
-    w2 = MainWindow()
+    w = MainWindow() #window for first camera
+    w2 = MainWindow() #window for second camera
 
     # Create a main widget to hold both windows
-    main_widget = QWidget()
+    main_widget = QWidget() # combine the two live streams into one window
     layout = QHBoxLayout(main_widget)
     layout.setSpacing(0)  # Set spacing to zero
     layout.addWidget(w)
